@@ -6,81 +6,142 @@
 <title>Геопортал Астаны</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.css">
 <style>
-/* Раскладка: карта на весь экран; слева плавающая панель слоёв (как osmanov.kz),
-   справа плавающая панель аналитики (как Геоинтеллект). На телефоне панели под картой. */
+/* Раскладка как у osmanov.kz: белая шапка с поиском, карта под ней,
+   слева карточка «Слои» с тумблерами, справа карточка аналитики (изохроны). */
 :root {
-  --bg: #f3f3f1;
+  --bg: #ffffff;
   --panel: #ffffff;
-  --fg: #1d1d1b;
-  --muted: #6e6e68;
-  --line: #e6e5e0;
-  --chip: #f1f0ec;
+  --fg: #16181a;
+  --muted: #6b7075;
+  --line: #e7e8ea;
+  --chip: #f3f4f5;
   --accent: #1f6b4f;
   --accent-ink: #ffffff;
-  --accent-soft: #e5f0ea;
+  --accent-soft: #e6f1eb;
   --school: #7a4cc2;
   --clinic: #d23c4e;
-  --district: #5b5b55;
+  --district: #4f5559;
   --warn: #a35400;
-  --shadow: 0 10px 30px rgba(20, 20, 18, .14), 0 1px 3px rgba(20, 20, 18, .08);
+  --shadow: 0 8px 28px rgba(16, 18, 20, .12), 0 1px 3px rgba(16, 18, 20, .08);
   --font: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --header: 64px;
   --r: 14px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #121311; --panel: #1c1d1b; --fg: #eeeeea; --muted: #a2a29b; --line: #2e2f2c;
-    --chip: #262724; --accent: #57b88f; --accent-ink: #0f1a14; --accent-soft: #1d3329;
-    --school: #a98be6; --clinic: #f0707e; --district: #c9c9c2; --warn: #e6a24a;
-    --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark;
+    --bg: #15171a; --panel: #1c1f22; --fg: #eceef0; --muted: #a0a6ab; --line: #2d3135;
+    --chip: #262a2e; --accent: #57b88f; --accent-ink: #0f1a14; --accent-soft: #1d3329;
+    --school: #a98be6; --clinic: #f0707e; --district: #c9ccd0; --warn: #e6a24a;
+    --shadow: 0 8px 28px rgba(0, 0, 0, .45); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #121311; --panel: #1c1d1b; --fg: #eeeeea; --muted: #a2a29b; --line: #2e2f2c;
-  --chip: #262724; --accent: #57b88f; --accent-ink: #0f1a14; --accent-soft: #1d3329;
-  --school: #a98be6; --clinic: #f0707e; --district: #c9c9c2; --warn: #e6a24a;
-  --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark;
+  --bg: #15171a; --panel: #1c1f22; --fg: #eceef0; --muted: #a0a6ab; --line: #2d3135;
+  --chip: #262a2e; --accent: #57b88f; --accent-ink: #0f1a14; --accent-soft: #1d3329;
+  --school: #a98be6; --clinic: #f0707e; --district: #c9ccd0; --warn: #e6a24a;
+  --shadow: 0 8px 28px rgba(0, 0, 0, .45); color-scheme: dark;
 }
 [hidden] { display: none !important; }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
 body { background: var(--bg); color: var(--fg); font: 14px/1.45 var(--font); overflow: hidden; }
+button, input, select { font: inherit; color: inherit; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-#map { position: fixed; inset: 0; }
+/* ---------- шапка ---------- */
+.topbar {
+  position: fixed; inset: 0 0 auto 0; height: var(--header); z-index: 10;
+  display: flex; align-items: center; gap: 20px;
+  padding: 0 max(20px, env(safe-area-inset-right, 0px)) 0 max(20px, env(safe-area-inset-left, 0px));
+  background: var(--panel); border-bottom: 1px solid var(--line);
+}
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 19px; letter-spacing: .02em; white-space: nowrap; }
+.search { flex: 0 1 460px; display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel); }
+.search input { flex: 1; min-width: 0; border: 0; padding: 10px 14px; background: transparent; outline: none; }
+.search button { border: 0; border-left: 1px solid var(--line); background: transparent; padding: 0 14px; cursor: pointer; color: var(--muted); }
+.nav { display: flex; gap: 4px; margin-left: auto; }
+.nav button {
+  display: flex; align-items: center; gap: 8px; border: 0; background: transparent; cursor: pointer;
+  padding: 9px 12px; border-radius: 10px; font-weight: 700; font-size: 13.5px;
+}
+.nav button:hover { background: var(--chip); }
+.nav button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+.nav svg { flex: none; }
 
-.panel {
-  position: absolute; z-index: 5; top: 16px; width: 320px;
-  max-height: calc(100% - 32px); overflow-y: auto;
+#map { position: fixed; inset: var(--header) 0 0 0; }
+
+/* ---------- карточки ---------- */
+.card {
+  position: absolute; z-index: 5; top: calc(var(--header) + 16px); width: 340px;
+  max-height: calc(100% - var(--header) - 32px); overflow-y: auto;
   background: var(--panel); border-radius: var(--r); box-shadow: var(--shadow);
 }
-.panel.left { left: 16px; }
-.panel.right { right: 16px; }
+.card.left { left: 16px; }
+.card.right { right: 16px; }
+.card-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px 14px; border-bottom: 1px solid var(--line); }
+.card-head h2 { margin: 0; font-size: 20px; font-weight: 700; }
+.x { border: 0; background: none; cursor: pointer; font-size: 22px; line-height: 1; color: var(--fg); padding: 2px 4px; }
 
-.brand { display: flex; gap: 12px; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--line); }
-.brand svg { flex: none; }
-.brand h1 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: .01em; }
-.brand p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
-
-.sec { padding: 14px 18px; display: grid; gap: 10px; }
-.sec + .sec { border-top: 1px solid var(--line); }
-.sec h2 { margin: 0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); }
+.group { padding: 14px 22px; display: grid; gap: 10px; }
+.group + .group { border-top: 1px solid var(--line); }
+.group h3 { margin: 0; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .hint { margin: 0; color: var(--muted); font-size: 12.5px; }
 
-.seg { display: flex; gap: 6px; flex-wrap: wrap; }
-.seg button, .btn {
-  font: inherit; font-size: 13px; color: var(--fg); background: var(--chip);
-  border: 1px solid transparent; border-radius: 8px; padding: 6px 11px; cursor: pointer;
+/* выбор подложки — карточки-радиокнопки */
+.basemaps { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.basemaps label {
+  display: flex; align-items: center; gap: 10px; padding: 11px 12px; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 10px; font-weight: 700; font-size: 13.5px;
 }
-.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
-.seg button:hover, .btn:hover { border-color: var(--line); }
-.btn.primary { background: var(--accent); color: var(--accent-ink); }
-button:focus-visible, select:focus-visible, input:focus-visible, label.btn:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.basemaps label:first-child { grid-column: 1 / -1; }
+.basemaps input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
+.basemaps label:has(input:checked) { border-color: var(--accent); }
+.range { display: grid; gap: 6px; }
+.range-row { display: flex; justify-content: space-between; color: var(--muted); font-size: 12.5px; }
+.range input { width: 100%; accent-color: var(--accent); }
 
+/* строки слоёв с тумблером */
+.layer-row { display: grid; grid-template-columns: 1fr auto; gap: 2px 14px; align-items: center; padding: 8px 0; }
+.layer-row + .layer-row { border-top: 1px solid var(--line); }
+.layer-row .name { font-weight: 700; font-size: 14px; }
+.layer-row .sub { grid-column: 1; display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 12px; }
+.layer-row .del { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 12px; padding: 0; text-decoration: underline; }
+.swatch { width: 11px; height: 11px; border-radius: 50%; display: inline-block; flex: none; }
+.swatch.line { border-radius: 2px; background: transparent !important; border: 2px dashed var(--district); }
+.ramp { width: 64px; height: 8px; border-radius: 4px; display: inline-block; }
+.toggle {
+  grid-row: 1 / span 2; grid-column: 2; appearance: none; -webkit-appearance: none; margin: 0; cursor: pointer;
+  width: 46px; height: 26px; border-radius: 13px; background: var(--line); position: relative; transition: background .15s;
+}
+.toggle::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .25); transition: transform .15s;
+}
+.toggle:checked { background: var(--accent); }
+.toggle:checked::after { transform: translateX(20px); }
+@media (prefers-reduced-motion: reduce) { .toggle, .toggle::after { transition: none; } }
+
+.select { width: 100%; border: 1px solid var(--line); background: var(--chip); border-radius: 10px; padding: 11px 12px; font-size: 14px; }
+.note { color: var(--muted); font-size: 11.5px; }
+.parcel dl { grid-template-columns: 1fr; gap: 0; }
+.parcel dt { margin-top: 6px; }
+.add-btn {
+  border: 1px dashed var(--line); background: transparent; border-radius: 10px; padding: 10px; cursor: pointer;
+  color: var(--muted); font-weight: 700; font-size: 13px; width: 100%;
+}
+.add-btn:hover { border-color: var(--accent); color: var(--accent); }
+.foot { padding: 12px 22px 18px; color: var(--muted); font-size: 11.5px; border-top: 1px solid var(--line); }
+
+/* аналитика */
+.seg { display: flex; gap: 6px; flex-wrap: wrap; }
+.seg button { border: 1px solid var(--line); background: var(--panel); border-radius: 9px; padding: 7px 12px; cursor: pointer; font-size: 13px; font-weight: 700; }
+.seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .empty-state { background: var(--chip); border-radius: 10px; padding: 12px; color: var(--muted); font-size: 12.5px; }
 .result { display: grid; gap: 10px; }
 .origin { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.kpi { background: var(--chip); border-radius: 10px; padding: 8px 10px; }
-.kpi b { display: block; font-size: 17px; font-variant-numeric: tabular-nums; }
+.kpi { background: var(--chip); border-radius: 10px; padding: 9px 10px; }
+.kpi b { display: block; font-size: 18px; font-variant-numeric: tabular-nums; }
 .kpi span { font-size: 11px; color: var(--muted); }
 table.stats { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 13px; }
 .stats th, .stats td { padding: 6px 4px; text-align: right; border-bottom: 1px solid var(--line); }
@@ -88,28 +149,8 @@ table.stats { width: 100%; border-collapse: collapse; font-variant-numeric: tabu
 .stats th:first-child, .stats td:first-child { text-align: left; }
 .stats .t { display: inline-flex; align-items: center; gap: 6px; }
 .stats .t i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
-
-.layers { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-.layer { display: grid; grid-template-columns: auto auto 1fr auto; gap: 2px 10px; align-items: center; padding: 8px 6px; border-radius: 10px; }
-.layer:hover { background: var(--chip); }
-.layer input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; margin: 0; }
-.layer .name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; font-size: 13.5px; }
-.layer .meta { grid-column: 3 / 5; display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 12px; }
-.layer select { font: inherit; font-size: 12px; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 1px 4px; }
-.layer .del { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 4px; opacity: 0; }
-.layer:hover .del, .layer .del:focus-visible { opacity: 1; }
-.swatch { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-.swatch.line { border-radius: 2px; background: transparent !important; border: 2px solid var(--district); }
-
-.add { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 12px; }
-
-.legend { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
-.legend .ramp { height: 8px; border-radius: 4px; background: linear-gradient(90deg, #f3d98b, #e39a4b, #9c3d1f); }
-.legend .ticks { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
-
-select.base { font: inherit; color: var(--fg); background: var(--chip); border: 0; border-radius: 8px; padding: 7px 8px; width: 100%; }
-
-.foot { padding: 12px 18px 16px; color: var(--muted); font-size: 11px; border-top: 1px solid var(--line); }
+.btn { border: 1px solid var(--line); background: var(--panel); border-radius: 9px; padding: 7px 12px; cursor: pointer; font-size: 13px; font-weight: 700; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 
 .toast {
   position: fixed; left: 50%; transform: translateX(-50%); z-index: 20;
@@ -119,16 +160,15 @@ select.base { font: inherit; color: var(--fg); background: var(--chip); border: 
 }
 .toast.warn { background: var(--warn); color: #fff; }
 .overlay {
-  position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 30;
-  pointer-events: none; background: var(--panel); color: var(--fg); box-shadow: var(--shadow);
-  padding: 14px 20px; border-radius: 12px; font-weight: 700;
+  position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 30; pointer-events: none;
+  background: var(--panel); color: var(--fg); box-shadow: var(--shadow); padding: 14px 20px; border-radius: 12px; font-weight: 700;
 }
 .spinner { width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; display: inline-block; vertical-align: -2px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
 
 .maplibregl-ctrl-group { border-radius: 10px !important; box-shadow: var(--shadow) !important; }
-.maplibregl-popup-content { background: var(--panel); color: var(--fg); border-radius: 12px; padding: 12px 14px; font: 13px/1.4 var(--font); max-width: 280px; box-shadow: var(--shadow); }
+.maplibregl-popup-content { background: var(--panel); color: var(--fg); border-radius: 12px; padding: 12px 14px; font: 13px/1.4 var(--font); max-width: 290px; box-shadow: var(--shadow); }
 .maplibregl-popup-tip { border-top-color: var(--panel) !important; border-bottom-color: var(--panel) !important; }
 .maplibregl-popup-close-button { color: var(--muted); font-size: 18px; }
 .pop h3 { margin: 0 0 6px; font-size: 14px; }
@@ -136,69 +176,134 @@ select.base { font: inherit; color: var(--fg); background: var(--chip); border: 
 .pop dt { color: var(--muted); }
 .pop dd { margin: 0; overflow-wrap: anywhere; }
 
+@media (max-width: 980px) {
+  .nav .label { display: none; }
+  .logo span { display: none; }
+}
 @media (max-width: 760px) {
   body { overflow: auto; }
-  #map { position: relative; height: 56vh; }
-  .panel { position: static; width: auto; max-height: none; margin: 12px max(12px, env(safe-area-inset-left, 0px)); }
+  .topbar { position: sticky; top: 0; gap: 10px; }
+  #map { position: relative; inset: auto; height: 56vh; }
+  .card { position: static; width: auto; max-height: none; margin: 12px max(12px, env(safe-area-inset-left, 0px)); }
 }
 </style>
 </head>
 <body>
+<header class="topbar">
+  <div class="logo">
+    <svg width="28" height="28" viewBox="0 0 34 34" aria-hidden="true">
+      <path d="M17 2l13 7.5v15L17 32 4 24.5v-15z" fill="var(--accent)"/>
+      <path d="M17 9l7 4v8l-7 4-7-4v-8z" fill="none" stroke="var(--accent-ink)" stroke-width="2.2"/>
+    </svg>
+    <span>ASTANA GEOPORTAL</span>
+  </div>
+  <form class="search" id="search" role="search">
+    <input id="q" type="search" placeholder="Адрес, ЖК или кадастровый номер" aria-label="Поиск адреса или кадастрового номера" autocomplete="off">
+    <button type="submit" aria-label="Найти">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    </button>
+  </form>
+  <nav class="nav" aria-label="Панели">
+    <button type="button" id="nav-layers" aria-pressed="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg>
+      <span class="label">Слои</span>
+    </button>
+    <button type="button" id="nav-iso" aria-pressed="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+      <span class="label">Изохрона</span>
+    </button>
+    <button type="button" id="nav-locate">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+      <span class="label">Моё местоположение</span>
+    </button>
+  </nav>
+</header>
+
 <div id="map" role="region" aria-label="Карта Астаны"></div>
 
-<aside class="panel left" aria-label="Слои">
-  <div class="brand">
-    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
-      <path d="M17 2l13 7.5v15L17 32 4 24.5v-15z" fill="var(--accent)"/>
-      <path d="M17 9l7 4v8l-7 4-7-4v-8z" fill="none" stroke="var(--accent-ink)" stroke-width="2"/>
-    </svg>
-    <div>
-      <h1>Астана · Геопортал</h1>
-      <p>Доступность социальной инфраструктуры</p>
-    </div>
+<aside class="card left" id="panel-layers" aria-label="Слои">
+  <div class="card-head">
+    <h2>Слои</h2>
+    <button class="x" type="button" data-close="layers" aria-label="Скрыть панель">×</button>
   </div>
-
-  <section class="sec" aria-labelledby="h-layers">
-    <h2 id="h-layers">Слои</h2>
-    <ul class="layers" id="layers"></ul>
-    <div class="legend" id="legend" hidden>
-      <span>Население дома, чел.</span>
-      <div class="ramp"></div>
-      <div class="ticks"><span>0</span><span>200</span><span>1000+</span></div>
+  <section class="group">
+    <h3>Карты</h3>
+    <div class="basemaps" role="radiogroup" aria-label="Подложка">
+      <label><input type="radio" name="bm" id="bm-osm" value="osm" checked> OpenStreetMap</label>
+      <label><input type="radio" name="bm" id="bm-light" value="light"> Светлая</label>
+      <label><input type="radio" name="bm" id="bm-esri" value="esri"> Спутник</label>
     </div>
-    <div class="add">
-      <span>Свой слой GeoJSON</span>
-      <label class="btn" for="file-input">Добавить</label>
-      <input id="file-input" type="file" accept=".geojson,.json" multiple hidden>
+    <div class="range">
+      <div class="range-row"><span>Яркость подложки</span><span id="fade-val">70%</span></div>
+      <input type="range" id="fade" min="20" max="100" value="70" aria-label="Яркость подложки">
     </div>
   </section>
-
-  <section class="sec" aria-labelledby="h-base">
-    <h2 id="h-base">Подложка</h2>
-    <select id="basemap" class="base" aria-label="Подложка">
-      <option value="auto">Схема (по теме)</option>
-      <option value="light">Схема светлая</option>
-      <option value="dark">Схема тёмная</option>
-      <option value="osm">OpenStreetMap</option>
-      <option value="esri">Спутник</option>
+  <section class="group">
+    <h3>Генплан</h3>
+    <select id="genplan" class="select" aria-label="Генплан">
+      <option value="">Без генплана</option>
+      <option value="gp2030">Генеральный план до 2030 г.</option>
+      <option value="zoning">Функциональное зонирование</option>
     </select>
+    <div class="range">
+      <div class="range-row"><span>Прозрачность</span><span id="gp-op-val">40%</span></div>
+      <input type="range" id="gp-op" min="0" max="90" value="40" aria-label="Прозрачность генплана">
+    </div>
   </section>
-
+  <div id="layer-groups"></div>
+  <section class="group">
+    <h3>Градостроительные ограничения</h3>
+    <div class="layer-row">
+      <label class="name" for="ov-pdp">ПДП (детальная планировка)</label>
+      <input class="toggle" type="checkbox" id="ov-pdp" data-overlay="pdp">
+      <div class="sub">Проектные красные линии, регламент, здания ПДП</div>
+    </div>
+    <div class="layer-row">
+      <label class="name" for="ov-red">Красные линии</label>
+      <input class="toggle" type="checkbox" id="ov-red" data-overlay="red">
+      <div class="sub">По генплану Астаны</div>
+    </div>
+    <div class="layer-row">
+      <label class="name" for="ov-water">Водоохранные зоны и полосы</label>
+      <input class="toggle" type="checkbox" id="ov-water" data-overlay="water">
+      <div class="sub">Ограничения застройки у водоёмов</div>
+    </div>
+  </section>
+  <section class="group">
+    <h3>Кадастр</h3>
+    <div class="layer-row">
+      <label class="name" for="ov-parcels">Земельные участки</label>
+      <input class="toggle" type="checkbox" id="ov-parcels" data-overlay="parcels">
+      <div class="sub">АИС ГЗК · видно при сильном приближении</div>
+    </div>
+    <p class="note">Клик по участку покажет кадастровый номер, площадь и назначение. Номер можно искать в строке поиска.</p>
+  </section>
+  <section class="group">
+    <label class="add-btn" for="file-input" role="button" tabindex="0">+ Добавить свой слой GeoJSON</label>
+    <input id="file-input" type="file" accept=".geojson,.json" multiple hidden>
+  </section>
   <div class="foot">
     Население: модель 2026, калибровка по БНС на 01.09.2026. Маршрутизация: Valhalla (OSM).
-    Подложки: © OpenStreetMap, © Esri. Данные носят справочный характер.
+    Генплан, ПДП, кадастр: геопортал акимата г. Астаны (gis.esaulet.kz). Подложки: © OpenStreetMap, © Esri. Данные носят справочный характер и не заменяют официальные документы.
   </div>
 </aside>
 
-<aside class="panel right" aria-label="Аналитика">
-  <section class="sec" aria-labelledby="h-iso">
-    <h2 id="h-iso">Изохрона доступности</h2>
+<aside class="card right" id="panel-iso" aria-label="Изохрона">
+  <div class="card-head">
+    <h2>Изохрона</h2>
+    <button class="x" type="button" data-close="iso" aria-label="Скрыть панель">×</button>
+  </div>
+  <section class="group">
+    <h3>Способ</h3>
     <div class="seg" role="group" aria-label="Способ передвижения">
       <button id="mode-ped" type="button" aria-pressed="true" data-mode="pedestrian">Пешком</button>
       <button id="mode-bike" type="button" aria-pressed="false" data-mode="bicycle">Велосипед</button>
       <button id="mode-auto" type="button" aria-pressed="false" data-mode="auto">Авто</button>
     </div>
+    <h3>Время</h3>
     <div class="seg" role="group" aria-label="Время, минут" id="times"></div>
+  </section>
+  <section class="group">
     <div id="iso-result" class="result">
       <div class="empty-state">Нажмите на любую точку карты: появятся зоны доступности и число жителей, школ и поликлиник внутри них.</div>
     </div>
@@ -215,7 +320,30 @@ select.base { font: inherit; color: var(--fg); background: var(--chip); border: 
 
 // ---------- настройки ----------
 const VALHALLA = "https://valhalla1.openstreetmap.de/isochrone";
+const NOMINATIM = "https://nominatim.openstreetmap.org/search";
+const ARC = "https://gis.esaulet.kz/server/rest/services";
+const ARC_ATTR = "Акимат г. Астаны";
+// слои геопортала акимата: сервис + номера слоёв
+const OVERLAYS = {
+  gp2030: { svc: "GenPlan_NurSultan_2030", show: "0" },
+  zoning: { svc: "Генплан_Астаны", show: "53" },
+  pdp: { svc: "Sloi_geoportala_otkrytiy_kontur_0702", show: "2" },
+  red: { svc: "Генплан_Астаны", show: "46" },
+  water: { svc: "Sloi_geoportala_otkrytiy_kontur_0702", show: "54" },
+  parcels: { svc: "Sloi_geoportala_otkrytiy_kontur_0702", show: "53" },
+};
+const PARCELS_QUERY = `${ARC}/Sloi_geoportala_otkrytiy_kontur_0702/MapServer/53/query`;
+const PARCEL_FIELDS = [
+  ["KAD_NOMER", "Кадастровый номер"],
+  ["Площадь__кв_м__", "Площадь, м²"],
+  ["Местоположение", "Местоположение"],
+  ["Категория_земель", "Категория земель"],
+  ["Целевое_назначение", "Целевое назначение"],
+  ["Предоставленное_право", "Право"],
+  ["Срок_землепользования", "Срок"],
+];
 const CENTER = [71.43, 51.13];
+const ASTANA_BOX = "71.10,51.40,71.85,50.90"; // запад, север, восток, юг
 const AUTOLOAD = [ // ищутся в папке data/, а если их там нет — рядом с index.html
   ["data/districts.geojson", "Районы", "districts"],
   ["data/population.geojson", "Население 2026", "population"],
@@ -224,40 +352,43 @@ const AUTOLOAD = [ // ищутся в папке data/, а если их там 
 ];
 const VALUE_FIELDS = ["pop_cal", "pop", "pop_2026", "obsh_kol", "pop_base", "population", "население"];
 const ALL_TIMES = [5, 10, 15, 20, 30];
-const ROLES = {
-  population: "Население",
-  schools: "Школы",
-  clinics: "Поликлиники",
-  districts: "Границы",
-  other: "Другое",
-};
+const GROUPS = [
+  ["Население", ["population"]],
+  ["Социальная инфраструктура", ["schools", "clinics"]],
+  ["Границы", ["districts"]],
+  ["Другие слои", ["other"]],
+];
 const OTHER_COLORS = ["#2f8f6a", "#b0832a", "#8a5a9e", "#5f6f52", "#a14f3b"];
-const ISO_RAMP = ["#1f6b4f", "#3f8f6c", "#7bb497", "#b6d7c6"]; // ближняя зона — насыщеннее
+const ISO_RAMP = ["#1f6b4f", "#3f8f6c", "#7bb497", "#b6d7c6"];
 const POP_RAMP = ["#f3d98b", "#e39a4b", "#9c3d1f"];
 
 const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const fmt = (n) => Math.round(n).toLocaleString("ru-RU");
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-const state = { mode: "pedestrian", times: [5, 10, 15], layers: [], iso: null, origin: null, seq: 0 };
+const state = { mode: "pedestrian", times: [5, 10, 15], layers: [], iso: null, origin: null, seq: 0, basemap: "osm", fade: 0.7 };
 
 // ---------- карта ----------
-const BASEMAPS = ["light", "dark", "osm", "esri"];
-const esriCanvas = (name) => `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/${name}/MapServer/tile/{z}/{y}/{x}`;
+const BASEMAPS = ["osm", "light", "esri"];
 const style = {
   version: 8,
   sources: {
-    light: { type: "raster", tileSize: 256, maxzoom: 16, attribution: "© Esri, © OpenStreetMap", tiles: [esriCanvas("World_Light_Gray_Base")] },
-    dark: { type: "raster", tileSize: 256, maxzoom: 16, attribution: "© Esri, © OpenStreetMap", tiles: [esriCanvas("World_Dark_Gray_Base")] },
     osm: { type: "raster", tileSize: 256, maxzoom: 19, attribution: "© OpenStreetMap", tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"] },
+    light: { type: "raster", tileSize: 256, maxzoom: 16, attribution: "© Esri, © OpenStreetMap",
+      tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"] },
     esri: { type: "raster", tileSize: 256, maxzoom: 19, attribution: "© Esri, Maxar",
       tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"] },
     iso: { type: "geojson", data: { type: "FeatureCollection", features: [] } },
+    parcel: { type: "geojson", data: { type: "FeatureCollection", features: [] } },
   },
   layers: [
-    ...BASEMAPS.map((id) => ({ id: "bm-" + id, type: "raster", source: id, layout: { visibility: "none" } })),
+    { id: "paper", type: "background", paint: { "background-color": "#ffffff" } },
+    ...BASEMAPS.map((id) => ({ id: "bm-" + id, type: "raster", source: id, layout: { visibility: "none" },
+      paint: id === "osm" ? { "raster-saturation": -0.25 } : {} })),
     { id: "iso-fill", type: "fill", source: "iso", paint: { "fill-color": ["get", "_c"], "fill-opacity": 0.2 } },
     { id: "iso-line", type: "line", source: "iso", paint: { "line-color": ["get", "_c"], "line-width": 1.8 } },
+    { id: "parcel-fill", type: "fill", source: "parcel", paint: { "fill-color": "#e0a100", "fill-opacity": 0.25 } },
+    { id: "parcel-line", type: "line", source: "parcel", paint: { "line-color": "#c26a00", "line-width": 2.5 } },
   ],
 };
 
@@ -265,24 +396,98 @@ const map = new maplibregl.Map({ container: "map", style, center: CENTER, zoom: 
 map.addControl(new maplibregl.NavigationControl({ visualizePitch: false }), "bottom-right");
 map.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-right");
 const originMarker = new maplibregl.Marker({ color: ISO_RAMP[0] });
+const searchMarker = new maplibregl.Marker({ color: "#16181a" });
 
-// ---------- подложка ----------
-const darkMQ = window.matchMedia("(prefers-color-scheme: dark)");
-function isDark() {
-  const t = document.documentElement.getAttribute("data-theme");
-  return t ? t === "dark" : darkMQ.matches;
+function applyBasemap() {
+  BASEMAPS.forEach((b) => {
+    map.setLayoutProperty("bm-" + b, "visibility", b === state.basemap ? "visible" : "none");
+    map.setPaintProperty("bm-" + b, "raster-opacity", b === "esri" ? 1 : state.fade);
+  });
 }
-function setBasemap(choice) {
-  const id = choice === "auto" ? (isDark() ? "dark" : "light") : choice;
-  BASEMAPS.forEach((b) => map.setLayoutProperty("bm-" + b, "visibility", b === id ? "visible" : "none"));
-}
-const baseSel = document.getElementById("basemap");
-baseSel.addEventListener("change", () => setBasemap(baseSel.value));
-darkMQ.addEventListener("change", () => {
-  if (baseSel.value === "auto") setBasemap("auto");
-  state.layers.forEach((l) => { l.color = roleColor(l.role, state.layers.indexOf(l)); drawLayer(l); });
-  renderLayers();
+document.querySelectorAll('input[name="bm"]').forEach((r) =>
+  r.addEventListener("change", () => { state.basemap = r.value; applyBasemap(); }));
+const fadeEl = document.getElementById("fade");
+fadeEl.addEventListener("input", () => {
+  state.fade = fadeEl.value / 100;
+  document.getElementById("fade-val").textContent = fadeEl.value + "%";
+  applyBasemap();
 });
+
+// ---------- слои акимата (генплан, ПДП, кадастр) ----------
+function overlayTiles(o) {
+  return [`${ARC}/${encodeURIComponent(o.svc)}/MapServer/export?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857` +
+    `&size=512,512&dpi=96&format=png32&transparent=true&layers=show:${o.show}&f=image`];
+}
+function setOverlay(key, on, opacity = 1) {
+  const id = "ov-" + key;
+  if (on && !map.getSource(id)) {
+    map.addSource(id, { type: "raster", tiles: overlayTiles(OVERLAYS[key]), tileSize: 512, attribution: ARC_ATTR });
+    map.addLayer({ id, type: "raster", source: id, paint: { "raster-opacity": opacity } }, "iso-fill");
+  }
+  if (map.getLayer(id)) {
+    map.setLayoutProperty(id, "visibility", on ? "visible" : "none");
+    map.setPaintProperty(id, "raster-opacity", opacity);
+  }
+}
+const gpSel = document.getElementById("genplan");
+const gpOp = document.getElementById("gp-op");
+function applyGenplan() {
+  const op = 1 - gpOp.value / 100;
+  document.getElementById("gp-op-val").textContent = gpOp.value + "%";
+  ["gp2030", "zoning"].forEach((k) => setOverlay(k, gpSel.value === k, op));
+}
+gpSel.addEventListener("change", applyGenplan);
+gpOp.addEventListener("input", applyGenplan);
+document.querySelectorAll("[data-overlay]").forEach((t) =>
+  t.addEventListener("change", () => {
+    setOverlay(t.dataset.overlay, t.checked, 0.85);
+    if (t.dataset.overlay === "parcels" && t.checked && map.getZoom() < 15) toast("Участки видны при сильном приближении (масштаб 1:9 000 и крупнее).");
+  }));
+
+// ---------- кадастр: поиск и карточка участка ----------
+const parcelsOn = () => document.getElementById("ov-parcels").checked;
+async function queryParcels(params) {
+  const url = PARCELS_QUERY + "?" + new URLSearchParams(Object.assign({
+    outFields: PARCEL_FIELDS.map((f) => f[0]).join(","), returnGeometry: "true", outSR: "4326", f: "geojson",
+  }, params));
+  const r = await fetch(url);
+  if (!r.ok) throw new Error("сервер ответил " + r.status);
+  return (await r.json()).features || [];
+}
+function showParcel(f, ll) {
+  map.getSource("parcel").setData({ type: "FeatureCollection", features: [f] });
+  const p = f.properties || {};
+  const rows = PARCEL_FIELDS.filter(([k]) => p[k] !== null && p[k] !== undefined && p[k] !== "")
+    .map(([k, label]) => `<dt>${label}</dt><dd>${esc(k === "Площадь__кв_м__" ? fmt(p[k]) : p[k])}</dd>`).join("");
+  const at = ll || { lng: turf.centroid(f).geometry.coordinates[0], lat: turf.centroid(f).geometry.coordinates[1] };
+  const popup = new maplibregl.Popup({ offset: 10 }).setLngLat(at)
+    .setHTML(`<div class="pop parcel"><h3>Земельный участок</h3><dl>${rows}</dl><button class="btn primary" type="button">Изохрона отсюда</button></div>`)
+    .addTo(map);
+  popup.getElement().querySelector(".btn").addEventListener("click", () => { popup.remove(); setPanel("iso", true); runIso(at); });
+}
+async function searchCadastre(q) {
+  const clean = q.replace(/\D/g, ""); // в базе акимата номер хранится без дефисов
+  try {
+    const fs = await queryParcels({ where: `KAD_NOMER LIKE '%${clean}%'`, resultRecordCount: "1" });
+    if (!fs.length) { toast("Участок с таким кадастровым номером не найден в слое акимата."); return; }
+    const bb = turf.bbox(fs[0]);
+    map.fitBounds([[bb[0], bb[1]], [bb[2], bb[3]]], { padding: 120, maxZoom: 18 });
+    const t = document.getElementById("ov-parcels");
+    if (!t.checked) { t.checked = true; setOverlay("parcels", true, 0.85); }
+    showParcel(fs[0]);
+  } catch (e) {
+    toast("Кадастровый сервис акимата сейчас недоступен: " + e.message, true);
+  }
+}
+
+// ---------- панели ----------
+function setPanel(which, open) {
+  document.getElementById("panel-" + which).hidden = !open;
+  document.getElementById("nav-" + which).setAttribute("aria-pressed", open);
+}
+document.getElementById("nav-layers").addEventListener("click", () => setPanel("layers", document.getElementById("panel-layers").hidden));
+document.getElementById("nav-iso").addEventListener("click", () => setPanel("iso", document.getElementById("panel-iso").hidden));
+document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => setPanel(b.dataset.close, false)));
 
 // ---------- уведомления ----------
 let toastTimer;
@@ -294,6 +499,42 @@ function toast(msg, warn = false, ms = 5000) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { el.hidden = true; }, ms);
 }
+
+// ---------- поиск адреса ----------
+document.getElementById("search").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const q = document.getElementById("q").value.trim();
+  if (!q) return;
+  if (/^[\d\s:\-]{6,}$/.test(q)) { searchCadastre(q); return; }
+  try {
+    const url = `${NOMINATIM}?format=json&limit=1&accept-language=ru&bounded=1&viewbox=${ASTANA_BOX}&q=${encodeURIComponent(q)}`;
+    const r = await fetch(url);
+    const res = await r.json();
+    if (!res.length) { toast("Ничего не найдено в Астане. Попробуйте «улица, номер дома»."); return; }
+    const ll = { lng: Number(res[0].lon), lat: Number(res[0].lat) };
+    map.flyTo({ center: ll, zoom: 16 });
+    searchMarker.setLngLat(ll).addTo(map);
+    const popup = new maplibregl.Popup({ offset: 24 }).setLngLat(ll)
+      .setHTML(`<div class="pop"><h3>${esc(res[0].display_name.split(",").slice(0, 3).join(","))}</h3><button class="btn primary" type="button">Изохрона отсюда</button></div>`)
+      .addTo(map);
+    popup.getElement().querySelector(".btn").addEventListener("click", () => { popup.remove(); setPanel("iso", true); runIso(ll); });
+  } catch {
+    toast("Поиск сейчас недоступен, попробуйте позже.", true);
+  }
+});
+
+// ---------- моё местоположение ----------
+document.getElementById("nav-locate").addEventListener("click", () => {
+  if (!navigator.geolocation) { toast("Браузер не умеет определять местоположение."); return; }
+  navigator.geolocation.getCurrentPosition(
+    (p) => {
+      const ll = { lng: p.coords.longitude, lat: p.coords.latitude };
+      map.flyTo({ center: ll, zoom: 15 });
+      searchMarker.setLngLat(ll).addTo(map);
+    },
+    () => toast("Не удалось определить местоположение: разрешите доступ в браузере."),
+    { enableHighAccuracy: true, timeout: 10000 });
+});
 
 // ---------- время и режим ----------
 const timesEl = document.getElementById("times");
@@ -326,11 +567,7 @@ document.querySelectorAll("[data-mode]").forEach((b) =>
     document.querySelectorAll("[data-mode]").forEach((x) => x.setAttribute("aria-pressed", x === b));
     if (state.origin) runIso(state.origin);
   }));
-
-function contourColor(t, times) {
-  const i = times.indexOf(t);
-  return ISO_RAMP[Math.min(i < 0 ? 3 : i, 3)];
-}
+const contourColor = (t, times) => ISO_RAMP[Math.min(Math.max(times.indexOf(t), 0), 3)];
 
 // ---------- изохрона ----------
 async function runIso(lngLat) {
@@ -374,7 +611,8 @@ function pointsInside(layer, poly) {
 function renderStats() {
   const box = document.getElementById("iso-result");
   if (!state.iso) return;
-  const by = (role) => state.layers.filter((l) => l.role === role && l.visible);
+  // считаем по всем загруженным слоям, даже если слой скрыт на карте
+  const by = (role) => state.layers.filter((l) => l.role === role);
   const pop = by("population"), sch = by("schools"), cli = by("clinics");
   const rows = [...state.iso.features].sort((a, b) => a.properties.contour - b.properties.contour).map((f) => {
     const agg = (ls, key) => ls.reduce((a, l) => a + pointsInside(l, f)[key], 0);
@@ -402,7 +640,7 @@ function renderStats() {
         <td>${r.popN === null ? "—" : fmt(r.popN)}</td><td>${r.sch}</td><td>${r.cli}</td><td>${r.area.toFixed(1)}</td></tr>`).join("")}
       </tbody>
     </table>
-    ${pop.length ? "" : `<p class="hint">Включите слой населения, чтобы видеть число жителей.</p>`}
+    ${pop.length ? "" : `<p class="hint">Добавьте слой населения, чтобы видеть число жителей.</p>`}
     <div><button class="btn" type="button" id="iso-clear">Очистить</button></div>`;
   document.getElementById("iso-clear").addEventListener("click", clearIso);
 }
@@ -425,15 +663,8 @@ function guessRole(name, gj) {
   if (VALUE_FIELDS.some((f) => f in p) || /насел|дома|house|pop/.test(n)) return "population";
   return "other";
 }
-function valueField(gj) {
-  const p = gj.features[0]?.properties || {};
-  return VALUE_FIELDS.find((f) => f in p) || null;
-}
-function firstCoord(g) {
-  let c = g?.coordinates;
-  while (Array.isArray(c) && Array.isArray(c[0])) c = c[0];
-  return c;
-}
+const valueField = (gj) => { const p = gj.features[0]?.properties || {}; return VALUE_FIELDS.find((f) => f in p) || null; };
+function firstCoord(g) { let c = g?.coordinates; while (Array.isArray(c) && Array.isArray(c[0])) c = c[0]; return c; }
 function geomKind(gj) {
   const t = gj.features.find((f) => f.geometry)?.geometry.type || "";
   if (t.includes("Point")) return "point";
@@ -466,8 +697,7 @@ function addUserLayer(name, gj, roleHint) {
     let xy;
     if (f.geometry.type === "Point") xy = f.geometry.coordinates;
     else { try { xy = turf.centroid(f).geometry.coordinates; } catch { continue; } }
-    const v = field ? Number(f.properties?.[field]) || 0 : 0;
-    pts.push([xy[0], xy[1], v]);
+    pts.push([xy[0], xy[1], field ? Number(f.properties?.[field]) || 0 : 0]);
   }
   const layer = { id, name, role, kind, field, pts, visible: true, color: roleColor(role, state.layers.length), mapLayers: [] };
   state.layers.push(layer);
@@ -475,10 +705,6 @@ function addUserLayer(name, gj, roleHint) {
   drawLayer(layer);
   renderLayers();
   if (state.iso) renderStats();
-}
-
-function updateLegend() {
-  document.getElementById("legend").hidden = !state.layers.some((x) => x.role === "population" && x.visible);
 }
 
 function drawLayer(l) {
@@ -490,7 +716,7 @@ function drawLayer(l) {
     map.addLayer({ id: l.id + "-f", type: "fill", source: l.id, layout: { visibility: vis },
       paint: { "fill-color": l.color, "fill-opacity": outline ? 0 : (l.role === "population" ? 0.55 : 0.1) } }, "iso-fill");
     map.addLayer({ id: l.id + "-l", type: "line", source: l.id, layout: { visibility: vis },
-      paint: Object.assign({ "line-color": l.color, "line-width": outline ? 1.4 : 0.8, "line-opacity": 0.85 },
+      paint: Object.assign({ "line-color": l.color, "line-width": outline ? 1.6 : 0.8, "line-opacity": 0.9 },
         outline ? { "line-dasharray": [3, 2] } : {}) }, "iso-fill");
     l.mapLayers.push(l.id + "-f", l.id + "-l");
   } else if (l.kind === "line") {
@@ -503,7 +729,7 @@ function drawLayer(l) {
       paint: {
         "circle-color": ["interpolate", ["linear"], v, 0, POP_RAMP[0], 200, POP_RAMP[1], 1000, POP_RAMP[2]],
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 1.2, 13, 2.5, 16, 6],
-        "circle-opacity": 0.8,
+        "circle-opacity": 0.85,
       } });
     l.mapLayers.push(l.id + "-c");
   } else {
@@ -515,56 +741,49 @@ function drawLayer(l) {
       } });
     l.mapLayers.push(l.id + "-c");
   }
-  updateLegend();
+}
+
+function layerSub(l) {
+  if (l.role === "population") return `<span class="ramp" style="background:linear-gradient(90deg,${POP_RAMP.join(",")})"></span><span>${fmt(l.pts.length)} домов · 0 → 1000+ чел.</span>`;
+  if (l.role === "districts") return `<span class="swatch line"></span><span>${fmt(l.pts.length)} районов</span>`;
+  return `<span class="swatch" style="background:${l.color}"></span><span>${fmt(l.pts.length)} объектов</span>`;
 }
 
 function renderLayers() {
-  const ul = document.getElementById("layers");
+  const host = document.getElementById("layer-groups");
+  host.innerHTML = "";
   if (!state.layers.length) {
-    ul.innerHTML = `<li class="empty-state">Слоёв пока нет. Положите GeoJSON в папку data/ или нажмите «Добавить».</li>`;
+    host.innerHTML = `<section class="group"><h3>Данные</h3><div class="empty-state">Слои загружаются… Если их нет, положите GeoJSON рядом с index.html или нажмите «Добавить».</div></section>`;
     return;
   }
-  ul.innerHTML = "";
-  state.layers.forEach((l) => {
-    const li = document.createElement("li");
-    li.className = "layer";
-    const sw = l.role === "population"
-      ? `<span class="swatch" style="background:linear-gradient(90deg,${POP_RAMP.join(",")})"></span>`
-      : l.role === "districts" ? `<span class="swatch line"></span>`
-      : `<span class="swatch" style="background:${l.color}"></span>`;
-    li.innerHTML = `
-      <input type="checkbox" id="vis-${l.id}" ${l.visible ? "checked" : ""} aria-label="Показать слой">
-      ${sw}
-      <label class="name" for="vis-${l.id}" title="${esc(l.name)}">${esc(l.name)}</label>
-      <button class="del" type="button" aria-label="Удалить слой">×</button>
-      <div class="meta">
-        <span>${fmt(l.pts.length)} об.</span>
-        <select id="role-${l.id}" aria-label="Роль слоя">
-          ${Object.entries(ROLES).map(([k, v]) => `<option value="${k}" ${k === l.role ? "selected" : ""}>${v}</option>`).join("")}
-        </select>
-      </div>`;
-    li.querySelector("input").addEventListener("change", (e) => {
-      l.visible = e.target.checked;
-      l.mapLayers.forEach((m) => map.setLayoutProperty(m, "visibility", l.visible ? "visible" : "none"));
-      updateLegend();
-      if (state.iso) renderStats();
+  GROUPS.forEach(([title, roles]) => {
+    const ls = state.layers.filter((l) => roles.includes(l.role));
+    if (!ls.length) return;
+    const sec = document.createElement("section");
+    sec.className = "group";
+    sec.innerHTML = `<h3>${title}</h3>`;
+    ls.forEach((l) => {
+      const row = document.createElement("div");
+      row.className = "layer-row";
+      row.innerHTML = `
+        <label class="name" for="vis-${l.id}">${esc(l.name)}</label>
+        <input class="toggle" type="checkbox" id="vis-${l.id}" ${l.visible ? "checked" : ""}>
+        <div class="sub">${layerSub(l)}${l.role === "other" ? ` · <button class="del" type="button">удалить</button>` : ""}</div>`;
+      row.querySelector(".toggle").addEventListener("change", (e) => {
+        l.visible = e.target.checked;
+        l.mapLayers.forEach((m) => map.setLayoutProperty(m, "visibility", l.visible ? "visible" : "none"));
+        if (state.iso) renderStats();
+      });
+      row.querySelector(".del")?.addEventListener("click", () => {
+        l.mapLayers.forEach((m) => map.getLayer(m) && map.removeLayer(m));
+        map.removeSource(l.id);
+        state.layers = state.layers.filter((x) => x !== l);
+        renderLayers();
+        if (state.iso) renderStats();
+      });
+      sec.appendChild(row);
     });
-    li.querySelector("select").addEventListener("change", (e) => {
-      l.role = e.target.value;
-      l.color = roleColor(l.role, state.layers.indexOf(l));
-      drawLayer(l);
-      renderLayers();
-      if (state.iso) renderStats();
-    });
-    li.querySelector(".del").addEventListener("click", () => {
-      l.mapLayers.forEach((m) => map.getLayer(m) && map.removeLayer(m));
-      map.removeSource(l.id);
-      state.layers = state.layers.filter((x) => x !== l);
-      renderLayers();
-      updateLegend();
-      if (state.iso) renderStats();
-    });
-    ul.appendChild(li);
+    host.appendChild(sec);
   });
 }
 
@@ -572,17 +791,18 @@ function renderLayers() {
 async function readFiles(files) {
   for (const file of files) {
     try {
-      const gj = JSON.parse(await file.text());
-      addUserLayer(file.name.replace(/\.(geo)?json$/i, ""), gj);
+      addUserLayer(file.name.replace(/\.(geo)?json$/i, ""), JSON.parse(await file.text()));
       toast(`Добавлен слой «${file.name}»`);
-    } catch (e) {
+    } catch {
       toast(`Не удалось прочитать «${file.name}»: это не GeoJSON`, true);
     }
   }
 }
 document.getElementById("file-input").addEventListener("change", (e) => { readFiles(e.target.files); e.target.value = ""; });
+document.querySelector(".add-btn").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); document.getElementById("file-input").click(); }
+});
 
-// подсказка при перетаскивании: только для файлов, исчезает сама
 const overlay = document.getElementById("overlay");
 let overlayTimer;
 const isFileDrag = (e) => Array.from(e.dataTransfer?.types || []).includes("Files");
@@ -613,34 +833,40 @@ async function autoload() {
       } catch { /* файла нет или страница открыта без сервера */ }
     }
   }
+  if (!state.layers.length) renderLayers();
 }
 
 // ---------- клики по карте ----------
-function clickableLayers() {
-  return state.layers.filter((l) => l.visible && l.kind === "point").flatMap((l) => l.mapLayers);
-}
+const clickableLayers = () => state.layers.filter((l) => l.visible && l.kind === "point").flatMap((l) => l.mapLayers).filter((id) => map.getLayer(id));
 map.on("click", (e) => {
-  const ids = clickableLayers().filter((id) => map.getLayer(id));
+  const ids = clickableLayers();
   const hit = ids.length ? map.queryRenderedFeatures(e.point, { layers: ids }) : [];
-  if (!hit.length) { runIso(e.lngLat); return; }
+  if (!hit.length) {
+    if (parcelsOn() && map.getZoom() >= 15) {
+      queryParcels({ geometry: `${e.lngLat.lng},${e.lngLat.lat}`, geometryType: "esriGeometryPoint", inSR: "4326",
+        spatialRel: "esriSpatialRelIntersects", resultRecordCount: "1" })
+        .then((fs) => { if (fs.length) showParcel(fs[0], e.lngLat); else { setPanel("iso", true); runIso(e.lngLat); } })
+        .catch(() => { setPanel("iso", true); runIso(e.lngLat); });
+      return;
+    }
+    setPanel("iso", true); runIso(e.lngLat); return;
+  }
   const f = hit[0];
   const props = Object.entries(f.properties || {}).filter(([k, v]) => v !== null && v !== "" && !k.startsWith("_")).slice(0, 10);
   const title = f.properties?.name || f.properties?.Name || f.properties?.street || "Объект";
-  const html = `<div class="pop"><h3>${esc(title)}</h3>
-    <dl>${props.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
-    <button class="btn primary" type="button">Изохрона отсюда</button></div>`;
   const ll = f.geometry.type === "Point" ? { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] } : e.lngLat;
-  const popup = new maplibregl.Popup({ offset: 10 }).setLngLat(ll).setHTML(html).addTo(map);
-  popup.getElement().querySelector(".btn").addEventListener("click", () => { popup.remove(); runIso(ll); });
+  const popup = new maplibregl.Popup({ offset: 10 }).setLngLat(ll).setHTML(`<div class="pop"><h3>${esc(title)}</h3>
+    <dl>${props.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
+    <button class="btn primary" type="button">Изохрона отсюда</button></div>`).addTo(map);
+  popup.getElement().querySelector(".btn").addEventListener("click", () => { popup.remove(); setPanel("iso", true); runIso(ll); });
 });
 map.on("mousemove", (e) => {
-  const ids = clickableLayers().filter((id) => map.getLayer(id));
-  const hit = ids.length && map.queryRenderedFeatures(e.point, { layers: ids }).length;
-  map.getCanvas().style.cursor = hit ? "pointer" : "crosshair";
+  const ids = clickableLayers();
+  map.getCanvas().style.cursor = ids.length && map.queryRenderedFeatures(e.point, { layers: ids }).length ? "pointer" : "crosshair";
 });
 
 map.on("load", () => {
-  setBasemap(baseSel.value);
+  applyBasemap();
   renderLayers();
   autoload();
 });
