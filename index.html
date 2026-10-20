@@ -117,6 +117,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 .layer-row .sub { grid-column: 1; display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 12px; }
 .layer-row .del { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 12px; padding: 0; text-decoration: underline; }
 .swatch { width: 11px; height: 11px; border-radius: 50%; display: inline-block; flex: none; }
+.swatch-ic { width: 18px; height: 18px; flex: none; margin: -3px 0; }
 .swatch.line { border-radius: 2px; background: transparent !important; border: 2px dashed var(--district); }
 .ramp { width: 64px; height: 8px; border-radius: 4px; display: inline-block; }
 .toggle {
@@ -845,6 +846,43 @@ function addUserLayer(name, gj, roleHint) {
   if (state.iso) renderStats();
 }
 
+// ---------- значки школ и поликлиник (рисуются в canvas, без внешних файлов) ----------
+const ICON_PX = 2;               // плотность для чётких значков на Retina
+const iconURL = {};
+function makeIcon(kind, color) {
+  const S = 30, c = document.createElement("canvas");
+  c.width = c.height = S * ICON_PX;
+  const g = c.getContext("2d");
+  g.scale(ICON_PX, ICON_PX);
+  // кружок-подложка с белой обводкой и лёгкой тенью
+  g.shadowColor = "rgba(0,0,0,.28)"; g.shadowBlur = 3; g.shadowOffsetY = 1;
+  g.beginPath(); g.arc(15, 15, 12.5, 0, Math.PI * 2);
+  g.fillStyle = color; g.fill();
+  g.shadowColor = "transparent";
+  g.lineWidth = 2; g.strokeStyle = "#ffffff"; g.stroke();
+  g.fillStyle = "#ffffff";
+  if (kind === "clinic") {
+    // медицинский крест
+    g.fillRect(12.6, 8, 4.8, 14);
+    g.fillRect(8, 12.6, 14, 4.8);
+  } else {
+    // здание школы: фронтон, корпус, дверь и флажок
+    g.beginPath(); g.moveTo(7.5, 13.5); g.lineTo(15, 9); g.lineTo(22.5, 13.5); g.closePath(); g.fill();
+    g.fillRect(9, 13.5, 12, 8);
+    g.fillStyle = color; g.fillRect(13.6, 16.5, 2.8, 5);
+    g.fillRect(10.6, 15, 1.8, 1.8); g.fillRect(17.6, 15, 1.8, 1.8);
+    g.fillStyle = "#ffffff"; g.fillRect(14.6, 5, 0.9, 4.5);
+    g.beginPath(); g.moveTo(15.5, 5); g.lineTo(19, 6.2); g.lineTo(15.5, 7.4); g.closePath(); g.fill();
+  }
+  return c;
+}
+function ensureIcon(name, kind, color) {
+  if (!iconURL[name]) iconURL[name] = makeIcon(kind, color).toDataURL();
+  if (map.hasImage(name)) return;
+  const c = makeIcon(kind, color);
+  map.addImage(name, c.getContext("2d").getImageData(0, 0, c.width, c.height), { pixelRatio: ICON_PX });
+}
+
 function drawLayer(l) {
   l.mapLayers.forEach((m) => map.getLayer(m) && map.removeLayer(m));
   l.mapLayers = [];
@@ -870,6 +908,18 @@ function drawLayer(l) {
         "circle-opacity": 0.85,
       } });
     l.mapLayers.push(l.id + "-c");
+  } else if (l.role === "schools" || l.role === "clinics") {
+    const kind = l.role === "schools" ? "school" : "clinic";
+    const icon = "icon-" + kind;
+    ensureIcon(icon, kind, l.color);
+    map.addLayer({ id: l.id + "-c", type: "symbol", source: l.id,
+      layout: {
+        visibility: vis,
+        "icon-image": icon,
+        "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.55, 13, 0.75, 16, 1],
+        "icon-allow-overlap": true, "icon-ignore-placement": true,
+      } });
+    l.mapLayers.push(l.id + "-c");
   } else {
     map.addLayer({ id: l.id + "-c", type: "circle", source: l.id, layout: { visibility: vis },
       paint: {
@@ -884,6 +934,8 @@ function drawLayer(l) {
 function layerSub(l) {
   if (l.role === "population") return `<span class="ramp" style="background:linear-gradient(90deg,${POP_RAMP.join(",")})"></span><span>${fmt(l.pts.length)} домов · 0 → 1000+ чел.</span>`;
   if (l.role === "districts") return `<span class="swatch line"></span><span>${fmt(l.pts.length)} районов</span>`;
+  const ic = { schools: "icon-school", clinics: "icon-clinic" }[l.role];
+  if (ic && iconURL[ic]) return `<img class="swatch-ic" src="${iconURL[ic]}" alt=""><span>${fmt(l.pts.length)} объектов</span>`;
   return `<span class="swatch" style="background:${l.color}"></span><span>${fmt(l.pts.length)} объектов</span>`;
 }
 
