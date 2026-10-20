@@ -67,6 +67,16 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 .nav button:hover { background: var(--chip); }
 .nav button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
 .nav svg { flex: none; }
+.tools { display: flex; gap: 2px; padding: 3px; background: var(--chip); border-radius: 12px; }
+.tools button[aria-pressed="true"] { background: var(--panel); color: var(--accent); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
+.measure-card {
+  position: fixed; left: 50%; transform: translateX(-50%); z-index: 15;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  display: flex; align-items: center; gap: 14px; padding: 10px 12px 10px 16px;
+  background: var(--panel); border-radius: 12px; box-shadow: var(--shadow); font-weight: 700;
+}
+.measure-card span { font-variant-numeric: tabular-nums; }
+.measure-card small { color: var(--muted); font-weight: 400; }
 
 #map { position: fixed; inset: var(--header) 0 0 0; }
 
@@ -136,6 +146,10 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 .seg { display: flex; gap: 6px; flex-wrap: wrap; }
 .seg button { border: 1px solid var(--line); background: var(--panel); border-radius: 9px; padding: 7px 12px; cursor: pointer; font-size: 13px; font-weight: 700; }
 .seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.custom-val { display: flex; gap: 8px; }
+.custom-val input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 9px; padding: 7px 10px; background: var(--panel); font-size: 13px; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 13px; cursor: pointer; }
+.check input { accent-color: var(--accent); width: 15px; height: 15px; margin: 0; }
 .empty-state { background: var(--chip); border-radius: 10px; padding: 12px; color: var(--muted); font-size: 12.5px; }
 .result { display: grid; gap: 10px; }
 .origin { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -208,10 +222,20 @@ table.stats { width: 100%; border-collapse: collapse; font-variant-numeric: tabu
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg>
       <span class="label">Слои</span>
     </button>
-    <button type="button" id="nav-iso" aria-pressed="true">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
-      <span class="label">Изохрона</span>
-    </button>
+    <div class="tools" role="group" aria-label="Инструмент">
+      <button type="button" data-tool="browse" aria-pressed="true" title="Обычный курсор: перемещать карту и смотреть объекты">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 8-6 2-2 6z"/></svg>
+        <span class="label">Обзор</span>
+      </button>
+      <button type="button" data-tool="iso" aria-pressed="false" title="Клик по карте строит изохрону">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+        <span class="label">Изохрона</span>
+      </button>
+      <button type="button" data-tool="measure" aria-pressed="false" title="Измерить расстояние">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17L17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg>
+        <span class="label">Линейка</span>
+      </button>
+    </div>
     <button type="button" id="nav-locate">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
       <span class="label">Моё местоположение</span>
@@ -279,7 +303,7 @@ table.stats { width: 100%; border-collapse: collapse; font-variant-numeric: tabu
     <p class="note">Клик по участку покажет кадастровый номер, площадь и назначение. Номер можно искать в строке поиска.</p>
   </section>
   <section class="group">
-    <label class="add-btn" for="file-input" role="button" tabindex="0">+ Добавить свой слой GeoJSON</label>
+    <label class="add-btn" for="file-input" role="button" tabindex="0">+ Открыть свой файл GeoJSON (виден только вам)</label>
     <input id="file-input" type="file" accept=".geojson,.json" multiple hidden>
   </section>
   <div class="foot">
@@ -288,7 +312,7 @@ table.stats { width: 100%; border-collapse: collapse; font-variant-numeric: tabu
   </div>
 </aside>
 
-<aside class="card right" id="panel-iso" aria-label="Изохрона">
+<aside class="card right" id="panel-iso" aria-label="Изохрона" hidden>
   <div class="card-head">
     <h2>Изохрона</h2>
     <button class="x" type="button" data-close="iso" aria-label="Скрыть панель">×</button>
@@ -300,18 +324,34 @@ table.stats { width: 100%; border-collapse: collapse; font-variant-numeric: tabu
       <button id="mode-bike" type="button" aria-pressed="false" data-mode="bicycle">Велосипед</button>
       <button id="mode-auto" type="button" aria-pressed="false" data-mode="auto">Авто</button>
     </div>
-    <h3>Время</h3>
-    <div class="seg" role="group" aria-label="Время, минут" id="times"></div>
+    <h3>Мера</h3>
+    <div class="seg" role="group" aria-label="Мера доступности">
+      <button type="button" id="metric-time" data-metric="time" aria-pressed="true">По времени</button>
+      <button type="button" id="metric-dist" data-metric="distance" aria-pressed="false">По расстоянию</button>
+    </div>
+    <h3 id="vals-h">Время, мин</h3>
+    <div class="seg" role="group" aria-label="Значения" id="times"></div>
+    <form class="custom-val" id="custom-val">
+      <input type="number" id="val-in" inputmode="numeric" aria-label="Своё значение">
+      <button class="btn" type="submit">Добавить</button>
+    </form>
+    <label class="check" id="circle-row" hidden><input type="checkbox" id="circles"> Показать круг по прямой для сравнения</label>
+    <p class="hint">До 4 значений одновременно. Расстояние считается по улицам и тротуарам, а не по прямой.</p>
   </section>
   <section class="group">
     <div id="iso-result" class="result">
-      <div class="empty-state">Нажмите на любую точку карты: появятся зоны доступности и число жителей, школ и поликлиник внутри них.</div>
+      <div class="empty-state">Нажмите на любую точку карты (инструмент «Изохрона»): появятся зоны доступности и число жителей, школ и поликлиник внутри них.</div>
     </div>
   </section>
 </aside>
 
 <div class="overlay" id="overlay" hidden>Отпустите файл, чтобы добавить слой</div>
 <div class="toast" id="toast" hidden></div>
+<div class="measure-card" id="measure-card" hidden>
+  <span id="measure-val">Кликайте по карте, чтобы отметить точки</span>
+  <small>Esc — сбросить</small>
+  <button class="btn" type="button" id="measure-reset">Сбросить</button>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
@@ -351,7 +391,6 @@ const AUTOLOAD = [ // ищутся в папке data/, а если их там 
   ["data/clinics.geojson", "Поликлиники (ПМСП)", "clinics"],
 ];
 const VALUE_FIELDS = ["pop_cal", "pop", "pop_2026", "obsh_kol", "pop_base", "population", "население"];
-const ALL_TIMES = [5, 10, 15, 20, 30];
 const GROUPS = [
   ["Население", ["population"]],
   ["Социальная инфраструктура", ["schools", "clinics"]],
@@ -380,6 +419,8 @@ const style = {
       tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"] },
     iso: { type: "geojson", data: { type: "FeatureCollection", features: [] } },
     parcel: { type: "geojson", data: { type: "FeatureCollection", features: [] } },
+    measure: { type: "geojson", data: { type: "FeatureCollection", features: [] } },
+    circle: { type: "geojson", data: { type: "FeatureCollection", features: [] } },
   },
   layers: [
     { id: "paper", type: "background", paint: { "background-color": "#ffffff" } },
@@ -387,8 +428,13 @@ const style = {
       paint: id === "osm" ? { "raster-saturation": -0.25 } : {} })),
     { id: "iso-fill", type: "fill", source: "iso", paint: { "fill-color": ["get", "_c"], "fill-opacity": 0.2 } },
     { id: "iso-line", type: "line", source: "iso", paint: { "line-color": ["get", "_c"], "line-width": 1.8 } },
+    { id: "circle-line", type: "line", source: "circle", paint: { "line-color": "#16181a", "line-width": 1.6, "line-dasharray": [3, 2] } },
     { id: "parcel-fill", type: "fill", source: "parcel", paint: { "fill-color": "#e0a100", "fill-opacity": 0.25 } },
     { id: "parcel-line", type: "line", source: "parcel", paint: { "line-color": "#c26a00", "line-width": 2.5 } },
+    { id: "measure-line", type: "line", source: "measure", filter: ["==", ["geometry-type"], "LineString"],
+      paint: { "line-color": "#16181a", "line-width": 2.5, "line-dasharray": [2, 1.5] } },
+    { id: "measure-pts", type: "circle", source: "measure", filter: ["==", ["geometry-type"], "Point"],
+      paint: { "circle-radius": 5, "circle-color": "#ffffff", "circle-stroke-color": "#16181a", "circle-stroke-width": 2 } },
   ],
 };
 
@@ -463,7 +509,7 @@ function showParcel(f, ll) {
   const popup = new maplibregl.Popup({ offset: 10 }).setLngLat(at)
     .setHTML(`<div class="pop parcel"><h3>Земельный участок</h3><dl>${rows}</dl><button class="btn primary" type="button">Изохрона отсюда</button></div>`)
     .addTo(map);
-  popup.getElement().querySelector(".btn").addEventListener("click", () => { popup.remove(); setPanel("iso", true); runIso(at); });
+  popup.getElement().querySelector(".btn").addEventListener("click", () => { popup.remove(); isoFrom(at); });
 }
 async function searchCadastre(q) {
   const clean = q.replace(/\D/g, ""); // в базе акимата номер хранится без дефисов
@@ -486,8 +532,38 @@ function setPanel(which, open) {
   document.getElementById("nav-" + which).setAttribute("aria-pressed", open);
 }
 document.getElementById("nav-layers").addEventListener("click", () => setPanel("layers", document.getElementById("panel-layers").hidden));
-document.getElementById("nav-iso").addEventListener("click", () => setPanel("iso", document.getElementById("panel-iso").hidden));
-document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => setPanel(b.dataset.close, false)));
+document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => {
+  if (b.dataset.close === "iso") setTool("browse"); else setPanel(b.dataset.close, false);
+}));
+
+// ---------- инструменты: обзор, изохрона, линейка ----------
+state.tool = "browse";
+function setTool(t) {
+  state.tool = t;
+  document.querySelectorAll("[data-tool]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.tool === t));
+  document.getElementById("panel-iso").hidden = t !== "iso";
+  document.getElementById("measure-card").hidden = t !== "measure";
+  if (t !== "measure") clearMeasure();
+  if (t === "measure") map.doubleClickZoom.disable(); else map.doubleClickZoom.enable();
+  map.getCanvas().style.cursor = t === "browse" ? "" : "crosshair";
+}
+document.querySelectorAll("[data-tool]").forEach((b) => b.addEventListener("click", () => setTool(b.dataset.tool)));
+function isoFrom(ll) { setTool("iso"); runIso(ll); }
+
+// линейка
+const measurePts = [];
+function fmtDist(km) { return km < 1 ? `${Math.round(km * 1000)} м` : `${km.toFixed(2).replace(".", ",")} км`; }
+function drawMeasure() {
+  const feats = measurePts.map((p) => turf.point(p));
+  if (measurePts.length > 1) feats.push(turf.lineString(measurePts));
+  map.getSource("measure").setData({ type: "FeatureCollection", features: feats });
+  document.getElementById("measure-val").textContent = measurePts.length > 1
+    ? "Расстояние: " + fmtDist(turf.length(turf.lineString(measurePts), { units: "kilometers" }))
+    : "Кликайте по карте, чтобы отметить точки";
+}
+function clearMeasure() { measurePts.length = 0; if (map.getSource("measure")) drawMeasure(); }
+document.getElementById("measure-reset").addEventListener("click", clearMeasure);
+window.addEventListener("keydown", (e) => { if (e.key === "Escape" && state.tool === "measure") clearMeasure(); });
 
 // ---------- уведомления ----------
 let toastTimer;
@@ -517,7 +593,7 @@ document.getElementById("search").addEventListener("submit", async (e) => {
     const popup = new maplibregl.Popup({ offset: 24 }).setLngLat(ll)
       .setHTML(`<div class="pop"><h3>${esc(res[0].display_name.split(",").slice(0, 3).join(","))}</h3><button class="btn primary" type="button">Изохрона отсюда</button></div>`)
       .addTo(map);
-    popup.getElement().querySelector(".btn").addEventListener("click", () => { popup.remove(); setPanel("iso", true); runIso(ll); });
+    popup.getElement().querySelector(".btn").addEventListener("click", () => { popup.remove(); isoFrom(ll); });
   } catch {
     toast("Поиск сейчас недоступен, попробуйте позже.", true);
   }
@@ -536,30 +612,69 @@ document.getElementById("nav-locate").addEventListener("click", () => {
     { enableHighAccuracy: true, timeout: 10000 });
 });
 
-// ---------- время и режим ----------
+// ---------- параметры изохроны: время или расстояние ----------
+const PRESETS = { time: [5, 10, 15, 20, 30], distance: [300, 500, 800, 1000, 1500] };
+const LIMITS = { time: [1, 60], distance: [50, 5000] };
+state.metric = "time";
+state.vals = { time: [5, 10, 15], distance: [300, 500, 1000] };
+state.circles = false;
+state.circ = [];
+const fmtVal = (v, m = state.metric) => m === "time" ? `${v} мин`
+  : (v < 1000 ? `${v} м` : `${String(v / 1000).replace(".", ",")} км`);
 const timesEl = document.getElementById("times");
 function renderTimes() {
+  const sel = state.vals[state.metric];
+  const all = [...new Set([...PRESETS[state.metric], ...sel])].sort((a, b) => a - b);
   timesEl.innerHTML = "";
-  ALL_TIMES.forEach((t) => {
+  all.forEach((v) => {
     const b = document.createElement("button");
     b.type = "button";
-    b.id = "t-" + t;
-    b.textContent = t + " мин";
-    b.setAttribute("aria-pressed", state.times.includes(t));
-    b.addEventListener("click", () => {
-      if (state.times.includes(t)) {
-        if (state.times.length === 1) return;
-        state.times = state.times.filter((x) => x !== t);
-      } else {
-        if (state.times.length >= 4) { toast("Можно выбрать не больше 4 интервалов"); return; }
-        state.times = [...state.times, t].sort((a, b) => a - b);
-      }
-      renderTimes();
-      if (state.origin) runIso(state.origin);
-    });
+    b.id = `v-${state.metric}-${v}`;
+    b.textContent = fmtVal(v);
+    b.setAttribute("aria-pressed", sel.includes(v));
+    b.addEventListener("click", () => toggleVal(v));
     timesEl.appendChild(b);
   });
+  document.getElementById("vals-h").textContent = state.metric === "time" ? "Время, мин" : "Расстояние по улицам, м";
+  const inp = document.getElementById("val-in");
+  inp.min = LIMITS[state.metric][0];
+  inp.max = LIMITS[state.metric][1];
+  inp.step = state.metric === "time" ? 1 : 10;
+  inp.placeholder = state.metric === "time" ? "Своё время, например 7" : "Своё расстояние, например 300";
+  document.getElementById("circle-row").hidden = state.metric !== "distance";
 }
+function toggleVal(v, add = false) {
+  let sel = state.vals[state.metric];
+  if (sel.includes(v) && !add) {
+    if (sel.length === 1) return;
+    sel = sel.filter((x) => x !== v);
+  } else if (!sel.includes(v)) {
+    if (sel.length >= 4) { toast("Можно выбрать не больше 4 значений: снимите одно из выбранных."); return; }
+    sel = [...sel, v].sort((a, b) => a - b);
+  }
+  state.vals[state.metric] = sel;
+  renderTimes();
+  if (state.origin) runIso(state.origin);
+}
+document.querySelectorAll("[data-metric]").forEach((b) => b.addEventListener("click", () => {
+  state.metric = b.dataset.metric;
+  document.querySelectorAll("[data-metric]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  renderTimes();
+  if (state.origin) runIso(state.origin);
+}));
+document.getElementById("custom-val").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const inp = document.getElementById("val-in");
+  const [lo, hi] = LIMITS[state.metric];
+  const v = Math.round(Number(inp.value));
+  if (!v || v < lo || v > hi) { toast(`Введите число от ${lo} до ${hi}.`); return; }
+  inp.value = "";
+  toggleVal(v, true);
+});
+document.getElementById("circles").addEventListener("change", (e) => {
+  state.circles = e.target.checked;
+  if (state.origin) runIso(state.origin);
+});
 renderTimes();
 document.querySelectorAll("[data-mode]").forEach((b) =>
   b.addEventListener("click", () => {
@@ -567,34 +682,49 @@ document.querySelectorAll("[data-mode]").forEach((b) =>
     document.querySelectorAll("[data-mode]").forEach((x) => x.setAttribute("aria-pressed", x === b));
     if (state.origin) runIso(state.origin);
   }));
-const contourColor = (t, times) => ISO_RAMP[Math.min(Math.max(times.indexOf(t), 0), 3)];
 
 // ---------- изохрона ----------
 async function runIso(lngLat) {
   state.origin = lngLat;
   const my = ++state.seq;
+  const metric = state.metric, sel = [...state.vals[metric]];
   originMarker.setLngLat(lngLat).addTo(map);
   const box = document.getElementById("iso-result");
-  box.innerHTML = `<div class="empty-state"><span class="spinner"></span> Строю изохрону…</div>`;
+  box.innerHTML = `<div class="empty-state"><span class="spinner"></span> Строю зону доступности…</div>`;
   const body = {
     locations: [{ lat: lngLat.lat, lon: lngLat.lng }],
     costing: state.mode,
-    contours: state.times.map((t) => ({ time: t })),
-    polygons: true, denoise: 0.5, generalize: 20,
+    contours: sel.map((v) => metric === "time" ? { time: v } : { distance: v / 1000 }),
+    polygons: true, denoise: 0.5, generalize: metric === "distance" && sel[0] < 500 ? 5 : 20,
   };
   try {
     const r = await fetch(VALHALLA + "?json=" + encodeURIComponent(JSON.stringify(body)));
     if (!r.ok) throw new Error("сервер ответил " + r.status);
     const gj = await r.json();
     if (my !== state.seq) return;
-    gj.features.forEach((f) => { f.properties._c = contourColor(f.properties.contour, state.times); });
-    gj.features.sort((a, b) => b.properties.contour - a.properties.contour);
+    gj.features.forEach((f) => {
+      const raw = Number(f.properties.contour);
+      const v = metric === "time" ? raw : Math.round(raw * 1000);
+      const near = sel.reduce((a, b) => (Math.abs(b - v) < Math.abs(a - v) ? b : a), sel[0]);
+      f.properties._v = near;
+      f.properties._c = ISO_RAMP[Math.min(sel.indexOf(near), 3)];
+    });
+    gj.features.sort((a, b) => b.properties._v - a.properties._v);
     state.iso = gj;
+    state.isoMetric = metric;
     map.getSource("iso").setData(gj);
+    state.circ = metric === "distance" && state.circles
+      ? sel.map((v) => {
+        const c = turf.circle([lngLat.lng, lngLat.lat], v / 1000, { steps: 96, units: "kilometers" });
+        c.properties = { _v: v };
+        return c;
+      })
+      : [];
+    map.getSource("circle").setData({ type: "FeatureCollection", features: state.circ });
     renderStats();
   } catch (e) {
     if (my !== state.seq) return;
-    box.innerHTML = `<div class="empty-state">Не удалось построить изохрону: ${esc(e.message)}. Публичный сервер Valhalla иногда перегружен, повторите через минуту.</div>`;
+    box.innerHTML = `<div class="empty-state">Не удалось построить зону: ${esc(e.message)}. Публичный сервер Valhalla иногда перегружен, повторите через минуту.</div>`;
   }
 }
 
@@ -614,43 +744,51 @@ function renderStats() {
   // считаем по всем загруженным слоям, даже если слой скрыт на карте
   const by = (role) => state.layers.filter((l) => l.role === role);
   const pop = by("population"), sch = by("schools"), cli = by("clinics");
-  const rows = [...state.iso.features].sort((a, b) => a.properties.contour - b.properties.contour).map((f) => {
+  const calc = (f) => {
     const agg = (ls, key) => ls.reduce((a, l) => a + pointsInside(l, f)[key], 0);
     return {
-      t: f.properties.contour, c: f.properties._c,
       popN: pop.length ? agg(pop, "sum") : null,
       sch: sch.length ? agg(sch, "n") : "—",
       cli: cli.length ? agg(cli, "n") : "—",
       area: turf.area(f) / 1e6,
     };
-  });
+  };
+  const m = state.isoMetric;
+  const rows = [...state.iso.features].sort((a, b) => a.properties._v - b.properties._v)
+    .map((f) => Object.assign({ label: fmtVal(f.properties._v, m), sw: `background:${f.properties._c}` }, calc(f)));
+  const crow = state.circ.map((f) => Object.assign({
+    label: `${fmtVal(f.properties._v, "distance")} по прямой`, sw: "border:1.5px dashed currentColor;background:transparent",
+  }, calc(f)));
   const last = rows.at(-1);
   const modeName = { pedestrian: "пешком", bicycle: "на велосипеде", auto: "на авто" }[state.mode];
+  const kpiLabel = m === "time" ? `жителей за ${last.label}` : `жителей в ${last.label}`;
+  const fmtRow = (r) => `<tr>
+        <td><span class="t"><i style="${r.sw}"></i>${r.label}</span></td>
+        <td>${r.popN === null ? "—" : fmt(r.popN)}</td><td>${r.sch}</td><td>${r.cli}</td><td>${r.area.toFixed(2)}</td></tr>`;
   box.innerHTML = `
-    <div class="origin">${state.origin.lat.toFixed(5)}, ${state.origin.lng.toFixed(5)} · ${modeName}</div>
+    <div class="origin">${state.origin.lat.toFixed(5)}, ${state.origin.lng.toFixed(5)} · ${modeName} · ${m === "time" ? "по времени" : "по расстоянию"}</div>
     <div class="kpis">
-      <div class="kpi"><b>${last.popN === null ? "—" : fmt(last.popN)}</b><span>жителей за ${last.t} мин</span></div>
+      <div class="kpi"><b>${last.popN === null ? "—" : fmt(last.popN)}</b><span>${kpiLabel}</span></div>
       <div class="kpi"><b>${last.sch}</b><span>школ</span></div>
       <div class="kpi"><b>${last.cli}</b><span>поликлиник</span></div>
     </div>
     <table class="stats">
-      <thead><tr><th>Время</th><th>Жителей</th><th>Школ</th><th>Поликл.</th><th>км²</th></tr></thead>
-      <tbody>${rows.map((r) => `<tr>
-        <td><span class="t"><i style="background:${r.c}"></i>${r.t} мин</span></td>
-        <td>${r.popN === null ? "—" : fmt(r.popN)}</td><td>${r.sch}</td><td>${r.cli}</td><td>${r.area.toFixed(1)}</td></tr>`).join("")}
-      </tbody>
+      <thead><tr><th>Зона</th><th>Жителей</th><th>Школ</th><th>Поликл.</th><th>км²</th></tr></thead>
+      <tbody>${rows.map(fmtRow).join("")}${crow.map(fmtRow).join("")}</tbody>
     </table>
+    ${crow.length ? `<p class="hint">Пунктир — круг по прямой. Разница с зоной по улицам показывает, сколько территории недоступно из-за планировки.</p>` : ""}
     ${pop.length ? "" : `<p class="hint">Добавьте слой населения, чтобы видеть число жителей.</p>`}
     <div><button class="btn" type="button" id="iso-clear">Очистить</button></div>`;
   document.getElementById("iso-clear").addEventListener("click", clearIso);
 }
 
 function clearIso() {
-  state.iso = null; state.origin = null; state.seq++;
+  state.iso = null; state.origin = null; state.circ = []; state.seq++;
   map.getSource("iso").setData({ type: "FeatureCollection", features: [] });
+  map.getSource("circle").setData({ type: "FeatureCollection", features: [] });
   originMarker.remove();
   document.getElementById("iso-result").innerHTML =
-    `<div class="empty-state">Нажмите на карту, чтобы построить новую изохрону.</div>`;
+    `<div class="empty-state">Нажмите на карту, чтобы построить новую зону.</div>`;
 }
 
 // ---------- слои ----------
@@ -838,31 +976,37 @@ async function autoload() {
 
 // ---------- клики по карте ----------
 const clickableLayers = () => state.layers.filter((l) => l.visible && l.kind === "point").flatMap((l) => l.mapLayers).filter((id) => map.getLayer(id));
-map.on("click", (e) => {
-  const ids = clickableLayers();
-  const hit = ids.length ? map.queryRenderedFeatures(e.point, { layers: ids }) : [];
-  if (!hit.length) {
-    if (parcelsOn() && map.getZoom() >= 15) {
-      queryParcels({ geometry: `${e.lngLat.lng},${e.lngLat.lat}`, geometryType: "esriGeometryPoint", inSR: "4326",
-        spatialRel: "esriSpatialRelIntersects", resultRecordCount: "1" })
-        .then((fs) => { if (fs.length) showParcel(fs[0], e.lngLat); else { setPanel("iso", true); runIso(e.lngLat); } })
-        .catch(() => { setPanel("iso", true); runIso(e.lngLat); });
-      return;
-    }
-    setPanel("iso", true); runIso(e.lngLat); return;
-  }
-  const f = hit[0];
+function featurePopup(f, e) {
   const props = Object.entries(f.properties || {}).filter(([k, v]) => v !== null && v !== "" && !k.startsWith("_")).slice(0, 10);
   const title = f.properties?.name || f.properties?.Name || f.properties?.street || "Объект";
   const ll = f.geometry.type === "Point" ? { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] } : e.lngLat;
   const popup = new maplibregl.Popup({ offset: 10 }).setLngLat(ll).setHTML(`<div class="pop"><h3>${esc(title)}</h3>
     <dl>${props.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
     <button class="btn primary" type="button">Изохрона отсюда</button></div>`).addTo(map);
-  popup.getElement().querySelector(".btn").addEventListener("click", () => { popup.remove(); setPanel("iso", true); runIso(ll); });
+  popup.getElement().querySelector(".btn").addEventListener("click", () => { popup.remove(); isoFrom(ll); });
+}
+map.on("click", (e) => {
+  if (state.tool === "measure") { measurePts.push([e.lngLat.lng, e.lngLat.lat]); drawMeasure(); return; }
+  const ids = clickableLayers();
+  const hit = ids.length ? map.queryRenderedFeatures(e.point, { layers: ids }) : [];
+  if (state.tool === "iso") {
+    const f = hit[0];
+    runIso(f && f.geometry.type === "Point" ? { lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] } : e.lngLat);
+    return;
+  }
+  // режим «Обзор»: карточка объекта или участка
+  if (hit.length) { featurePopup(hit[0], e); return; }
+  if (parcelsOn() && map.getZoom() >= 15) {
+    queryParcels({ geometry: `${e.lngLat.lng},${e.lngLat.lat}`, geometryType: "esriGeometryPoint", inSR: "4326",
+      spatialRel: "esriSpatialRelIntersects", resultRecordCount: "1" })
+      .then((fs) => { if (fs.length) showParcel(fs[0], e.lngLat); })
+      .catch(() => toast("Кадастровый сервис акимата сейчас недоступен.", true));
+  }
 });
 map.on("mousemove", (e) => {
+  if (state.tool !== "browse") { map.getCanvas().style.cursor = "crosshair"; return; }
   const ids = clickableLayers();
-  map.getCanvas().style.cursor = ids.length && map.queryRenderedFeatures(e.point, { layers: ids }).length ? "pointer" : "crosshair";
+  map.getCanvas().style.cursor = ids.length && map.queryRenderedFeatures(e.point, { layers: ids }).length ? "pointer" : "";
 });
 
 map.on("load", () => {
