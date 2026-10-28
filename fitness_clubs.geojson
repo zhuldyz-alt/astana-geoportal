@@ -1,0 +1,882 @@
+{
+ "type": "FeatureCollection",
+ "name": "fitness_clubs",
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+  }
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.961209,
+     43.226097
+    ]
+   },
+   "properties": {
+    "n": 1,
+    "name": "Fightclub.kz",
+    "address": "Достык 105, БЦ Премьер Алатау",
+    "zone_table": "Ядро",
+    "dist_table_km": 0.08,
+    "time_table": "пешком",
+    "format": "Единоборства: бокс, MMA, муай-тай, БЖЖ, грэпплинг, кросс-тренинг, детские секции. Один комплекс с Level fitness (общий сайт fightlevel.kz)",
+    "price": "Общий прайс комплекса Fight & Level: месяц 65 000, 6 мес 345 000, 12 мес 480 000, разовое 10 000",
+    "rating_2gis": "4,9 по 363 оценкам. Яндекс 5,0 по 244 оценкам",
+    "lat": 43.226097,
+    "lon": 76.961209,
+    "straight_km": 0.11,
+    "road_est_km": 0.15,
+    "car_min_est": 3,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.961173,
+     43.226123
+    ]
+   },
+   "properties": {
+    "n": 2,
+    "name": "Level fitness & Gym",
+    "address": "Достык 105, БЦ Премьер Алатау, 2 этаж",
+    "zone_table": "Ядро",
+    "dist_table_km": 0.08,
+    "time_table": "пешком",
+    "format": "Тренажерный зал: силовая, функциональная, йога, стретчинг, пилатес, триатлон-зона. Один комплекс с Fightclub.kz",
+    "price": "По сайту комплекса: месяц 65 000, 6 мес 345 000, 12 мес 480 000, разовое 10 000. По 2ГИС: год от 225 000, месяц от 35 000",
+    "rating_2gis": "4,9 по 73 оценкам",
+    "lat": 43.226123,
+    "lon": 76.961173,
+    "straight_km": 0.11,
+    "road_est_km": 0.15,
+    "car_min_est": 3,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.959496,
+     43.225247
+    ]
+   },
+   "properties": {
+    "n": 3,
+    "name": "Balance and Grace Pilates Studio",
+    "address": "Кажымукана 10а, 9 этаж",
+    "zone_table": "Ядро",
+    "dist_table_km": 0.29,
+    "time_table": "пешком",
+    "format": "Студия пилатеса, занятия по записи, 08:00–20:00",
+    "price": "Месячный абонемент от 55 000, есть разовые",
+    "rating_2gis": "4,9 по 86 оценкам",
+    "lat": 43.225247,
+    "lon": 76.959496,
+    "straight_km": 0.22,
+    "road_est_km": 0.3,
+    "car_min_est": 4,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.958845,
+     43.228131
+    ]
+   },
+   "properties": {
+    "n": 4,
+    "name": "Banzai Premium Samal",
+    "address": "Аль-Фараби 1, ТРЦ Ритц-Палас, 2 этаж",
+    "zone_table": "Ядро",
+    "dist_table_km": 0.35,
+    "time_table": "пешком",
+    "format": "Премиум, первый премиальный клуб сети Banzai. Impulse — отдельная студия на Толе би 187, в PLATINUM не входит",
+    "price": "PLATINUM Day 06:00–18:00: 12 занятий 35 000, месяц 40 000, 6 мес 160 000, год 270 000. Full Day: 12 занятий 42 000, месяц 47 000, 6 мес 210 000, год 330 000 (297 000 со скидкой). Разовое 8 000. Персональный тренер 40 000 за 12 занятий. По 2ГИС год от 205 000, месяц от 30 000",
+    "rating_2gis": "4,8 по 583 оценкам",
+    "lat": 43.228131,
+    "lon": 76.958845,
+    "straight_km": 0.2,
+    "road_est_km": 0.26,
+    "car_min_est": 4,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.960763,
+     43.229972
+    ]
+   },
+   "properties": {
+    "n": 5,
+    "name": "Bubblzz",
+    "address": "Достык 210, БЦ Коктем Grand, блок 2, 4 этаж",
+    "zone_table": "Ядро",
+    "dist_table_km": 0.49,
+    "time_table": "пешком",
+    "format": "Женская фитнес-студия, сеть из 3 студий: пилатес, йога, стретчинг, аэробика, танцы, TRX",
+    "price": "По 2ГИС год от 250 000, месяц от 36 000. Объявление на Kaspi от 10.06.2026: остаток 41 занятие перепродается за 23 000",
+    "rating_2gis": "5,0 по 1 202 оценкам",
+    "lat": 43.229972,
+    "lon": 76.960763,
+    "straight_km": 0.33,
+    "road_est_km": 0.44,
+    "car_min_est": 4,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.963861,
+     43.221778
+    ]
+   },
+   "properties": {
+    "n": 6,
+    "name": "Adrenaline",
+    "address": "Достык 250, ЖК Этюд, цокольный этаж",
+    "zone_table": "Ядро",
+    "dist_table_km": 0.75,
+    "time_table": 6,
+    "format": "Сеть из 8 филиалов, средний сегмент. Этот филиал — компактный тренажерный зал по описанию 1Fit",
+    "price": "По 2ГИС год от 185 000, месяц от 25 000, есть разовые. Пробная с тренером 1 000 по Sxodim",
+    "rating_2gis": "4,8 по 395 оценкам",
+    "lat": 43.221778,
+    "lon": 76.963861,
+    "straight_km": 0.64,
+    "road_est_km": 0.86,
+    "car_min_est": 6,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.954485,
+     43.228105
+    ]
+   },
+   "properties": {
+    "n": 7,
+    "name": "Royal club",
+    "address": "Самал-3, 20, угол Мендикулова, 3 этаж",
+    "zone_table": "Ядро",
+    "dist_table_km": 0.8,
+    "time_table": 6,
+    "format": "Премиум, флагман сети Royal Club Fitness & Spa (4 клуба в Алматы, 2 в Шымкенте), открыт в конце 2021 года. Работает в здании бывшего Fidelity Самал, см. строку 11",
+    "price": "Kaspi Магазин: годовой дневной абонемент 568 000. Типы карт Platinum, Gold, Day, Kids, Corporate, прайс на сайте не опубликован",
+    "rating_2gis": "4,9 по 1 628 оценкам",
+    "lat": 43.228105,
+    "lon": 76.954485,
+    "straight_km": 0.52,
+    "road_est_km": 0.7,
+    "car_min_est": 5,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.955906,
+     43.234687
+    ]
+   },
+   "properties": {
+    "n": 8,
+    "name": "Invictus Fitness Самал",
+    "address": "Самал-1, Жолдасбекова 9а, цоколь",
+    "zone_table": "Расширенная",
+    "dist_table_km": 1.35,
+    "time_table": 8,
+    "format": "Сеть, премиальное оборудование по доступной цене, 3 филиала",
+    "price": "Год 280 000 по сайту клуба. По 2ГИС год от 350 000, месяц от 60 000. Три пробных тренировки 4 990",
+    "rating_2gis": "4,7 по 1 034 оценкам",
+    "lat": 43.234687,
+    "lon": 76.955906,
+    "straight_km": 0.94,
+    "road_est_km": 1.26,
+    "car_min_est": 8,
+    "zone_calc": "Расширенная",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.945971,
+     43.229773
+    ]
+   },
+   "properties": {
+    "n": 9,
+    "name": "Winox Pro, ТЦ Jurek Tau",
+    "address": "Аль-Фараби 5/2, ТЦ Jurek Tau, 2 этаж",
+    "zone_table": "Расширенная",
+    "dist_table_km": 1.76,
+    "time_table": 10,
+    "format": "Сеть, 40+ программ по сети",
+    "price": "По 2ГИС год от 179 000, месяц от 41 000. По Яндекс: дневная карта 7–17 165 000, утренняя 7–12 145 000, Full Day 3 мес 115 000, годовые 150 000–235 000. Реклама 2ГИС от 14 915 за месяц",
+    "rating_2gis": "4,5 по 1 125 оценкам. Яндекс 4,9 по 83",
+    "lat": 43.229773,
+    "lon": 76.945971,
+    "straight_km": 1.23,
+    "road_est_km": 1.67,
+    "car_min_est": 9,
+    "zone_calc": "Расширенная",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.93553,
+     43.246797
+    ]
+   },
+   "properties": {
+    "n": 10,
+    "name": "KRIDA (бывший World Class Almaty)",
+    "address": "Наурызбай батыра 89",
+    "zone_table": "Вне зоны",
+    "dist_table_km": 4.1,
+    "time_table": 20,
+    "format": "Премиум, семейный клуб. С 01.01.2024 работает под брендом KRIDA после окончания франшизы World Class",
+    "price": "Карты Full Day 12 и 6 мес, Off Peak 07–17, прайс на сайте не публикуется. По Яндекс: База триатлона 92 000 за 30 дней, База Swim 90 000 за 30 дней. 2015 год 18 000 за месяц",
+    "rating_2gis": "Яндекс 5,0 по 1 068 оценкам. 2ГИС не получен",
+    "lat": 43.246797,
+    "lon": 76.93553,
+    "straight_km": 3.0,
+    "road_est_km": 4.05,
+    "car_min_est": 19,
+    "zone_calc": "Вне зоны",
+    "car_10min": "нет",
+    "coord_source": "Sxodim"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.954485,
+     43.228105
+    ]
+   },
+   "properties": {
+    "n": 11,
+    "name": "Fidelity Samal → вероятно Royal Club Samal",
+    "address": "Самал-3, 20, угол Аль-Фараби и Мендикулова",
+    "zone_table": "Ядро",
+    "dist_table_km": 0.8,
+    "time_table": 6,
+    "format": "Вероятно дубль строки 7. Тот же адрес и тот же телефон +7 727 356 55 55, Zoon указывает сайт royalfitness.kz, справочник Gorodwiki ведет общую карточку Fidelity Самал / Royal Club Samal, Wikicity помечает Fidelity Самал закрытым",
+    "price": "Средний чек 5 000",
+    "rating_2gis": null,
+    "lat": 43.228105,
+    "lon": 76.954485,
+    "straight_km": 0.52,
+    "road_est_km": 0.7,
+    "car_min_est": 5,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "= Самал-3, 20 (Royal Club)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.95809,
+     43.239756
+    ]
+   },
+   "properties": {
+    "n": 13,
+    "name": "YA.",
+    "address": "Достык 116, ЖК Куат, угол Сатпаева, 2 этаж",
+    "zone_table": "Расширенная",
+    "dist_table_km": 1.92,
+    "time_table": 10,
+    "format": "Сеть женских фитнес-студий YA., 7 студий в Алматы. Этот филиал: 6 залов, пилатес на реформерах, сайкл, детская игровая зона, парковка",
+    "price": "Прайс сети: 3 мес 36 занятий 189 000, 6 мес 72 занятия 299 000, 12 мес 144 занятия 499 000, безлимит 649 000. Реклама от 20 281–20 791 за месяц в рассрочку",
+    "rating_2gis": "4,8 по 429 оценкам",
+    "lat": 43.239756,
+    "lon": 76.95809,
+    "straight_km": 1.43,
+    "road_est_km": 1.93,
+    "car_min_est": 10,
+    "zone_calc": "Расширенная",
+    "car_10min": "нет",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.931973,
+     43.213248
+    ]
+   },
+   "properties": {
+    "n": 14,
+    "name": "Invictus Fitness Sadu",
+    "address": "Аль-Фараби 128/7",
+    "zone_table": "Вне зоны",
+    "dist_table_km": 3.8,
+    "time_table": 18,
+    "format": "Флагман сети Invictus",
+    "price": null,
+    "rating_2gis": "4,9 по 1 816 оценкам",
+    "lat": 43.213248,
+    "lon": 76.931973,
+    "straight_km": 2.79,
+    "road_est_km": 3.77,
+    "car_min_est": 18,
+    "zone_calc": "Вне зоны",
+    "car_10min": "нет",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.960668,
+     43.252247
+    ]
+   },
+   "properties": {
+    "n": 15,
+    "name": "Adrenaline, Кабанбай батыра 49/1",
+    "address": "Кабанбай батыра 49/1 блок D1, ЖК Maxima Residence",
+    "zone_table": "Вне зоны",
+    "dist_table_km": 3.7,
+    "time_table": 18,
+    "format": "Сеть",
+    "price": "Цены в карточке не указаны",
+    "rating_2gis": "4,5 по 230 оценкам",
+    "lat": 43.252247,
+    "lon": 76.960668,
+    "straight_km": 2.8,
+    "road_est_km": 3.78,
+    "car_min_est": 18,
+    "zone_calc": "Вне зоны",
+    "car_10min": "нет",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.963046,
+     43.259081
+    ]
+   },
+   "properties": {
+    "n": 16,
+    "name": "ViVa Pilates и 35 Health Clubs",
+    "address": "Барибаева 43/9 и Барибаева 13",
+    "zone_table": "Вне зоны",
+    "dist_table_km": 4.7,
+    "time_table": 22,
+    "format": "ViVa Pilates: сеть из 3 студий пилатеса на реформерах, группы до 8 человек. 35 Health Clubs: 35-минутный круг на тренажерах Milon, сеть из 11 клубов, не более 8 человек в зале",
+    "price": "ViVa: индивидуальные 8 занятий 42 000, 12 — 60 000, разовое 7 000, пробное 3 500; по 2ГИС месяц от 42 000. 35 Health Clubs: месяц от 99 000 по 2ГИС",
+    "rating_2gis": "ViVa 4,9 по 398 оценкам. 35 HC 4,9 по 184 оценкам",
+    "lat": 43.259081,
+    "lon": 76.963046,
+    "straight_km": 3.57,
+    "road_est_km": 4.82,
+    "car_min_est": 22,
+    "zone_calc": "Вне зоны",
+    "car_10min": "нет",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.95516,
+     43.22598
+    ]
+   },
+   "properties": {
+    "n": 17,
+    "name": "Angel",
+    "address": "Кажымукана 49, ЖК Royal, 2 этаж",
+    "zone_table": "Ядро",
+    "dist_table_km": 0.63,
+    "time_table": 5,
+    "format": "Женская фитнес-студия",
+    "price": "Год от 326 800, месяц от 40 000, есть разовые",
+    "rating_2gis": "4,9 по 475 оценкам",
+    "lat": 43.22598,
+    "lon": 76.95516,
+    "straight_km": 0.47,
+    "road_est_km": 0.63,
+    "car_min_est": 5,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.955207,
+     43.231481
+    ]
+   },
+   "properties": {
+    "n": 18,
+    "name": "Family Space",
+    "address": "Самал-2, 91, 1 этаж",
+    "zone_table": "Ядро",
+    "dist_table_km": 0.9,
+    "time_table": 6,
+    "format": "Центр для женщин и детей: отдельный женский зал, йога, пилатес, стретчинг, бодифлекс, фитнес для беременных",
+    "price": "Месяц от 18 000, есть разовые",
+    "rating_2gis": "5,0 по 99 оценкам",
+    "lat": 43.231481,
+    "lon": 76.955207,
+    "straight_km": 0.67,
+    "road_est_km": 0.9,
+    "car_min_est": 6,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.950624,
+     43.229238
+    ]
+   },
+   "properties": {
+    "n": 19,
+    "name": "Kiran Medical Yoga",
+    "address": "Самал-2, 58, ЖК Сатти, 9 этаж",
+    "zone_table": "Ядро",
+    "dist_table_km": 1.15,
+    "time_table": 7,
+    "format": "Йога-центр: хатха, кундалини, пилатес",
+    "price": null,
+    "rating_2gis": "5,0 по 245 оценкам",
+    "lat": 43.229238,
+    "lon": 76.950624,
+    "straight_km": 0.85,
+    "road_est_km": 1.15,
+    "car_min_est": 7,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.953158,
+     43.231461
+    ]
+   },
+   "properties": {
+    "n": 20,
+    "name": "Сфера, студия йоги и саморазвития",
+    "address": "Самал-2, 66а, 2 этаж",
+    "zone_table": "Ядро",
+    "dist_table_km": 1.06,
+    "time_table": 7,
+    "format": "Йога-студия, 2 филиала",
+    "price": "Год от 185 000, месяц от 22 000, есть разовые",
+    "rating_2gis": "5,0 по 160 оценкам",
+    "lat": 43.231461,
+    "lon": 76.953158,
+    "straight_km": 0.79,
+    "road_est_km": 1.06,
+    "car_min_est": 7,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.953158,
+     43.231461
+    ]
+   },
+   "properties": {
+    "n": 21,
+    "name": "Ashtanga Yoga Center of Almaty",
+    "address": "Самал-2, 66а",
+    "zone_table": "Ядро",
+    "dist_table_km": 1.06,
+    "time_table": 7,
+    "format": "Йога-центр, аштанга, по записи",
+    "price": null,
+    "rating_2gis": "5,0 по 43 оценкам",
+    "lat": 43.231461,
+    "lon": 76.953158,
+    "straight_km": 0.79,
+    "road_est_km": 1.06,
+    "car_min_est": 7,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.953158,
+     43.231461
+    ]
+   },
+   "properties": {
+    "n": 22,
+    "name": "Inspire Stretching",
+    "address": "Бульвар Мендикулова 66А (тот же дом, что Самал-2, 66а)",
+    "zone_table": "Ядро",
+    "dist_table_km": 1.06,
+    "time_table": 7,
+    "format": "Студия стретчинга",
+    "price": null,
+    "rating_2gis": null,
+    "lat": 43.231461,
+    "lon": 76.953158,
+    "straight_km": 0.79,
+    "road_est_km": 1.06,
+    "car_min_est": 7,
+    "zone_calc": "Ядро",
+    "car_10min": "да",
+    "coord_source": "= Самал-2, 66а (Сфера)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.956251,
+     43.236181
+    ]
+   },
+   "properties": {
+    "n": 23,
+    "name": "Xan Gym",
+    "address": "Самал-1, 10, цоколь",
+    "zone_table": "Расширенная",
+    "dist_table_km": 1.46,
+    "time_table": 8,
+    "format": "Тренажерный зал, кроссфит, эконом. В старых справочниках по этому адресу Samal Gym",
+    "price": "Год от 80 000, месяц от 13 000, есть разовые",
+    "rating_2gis": "4,6 по 150 оценкам",
+    "lat": 43.236181,
+    "lon": 76.956251,
+    "straight_km": 1.08,
+    "road_est_km": 1.46,
+    "car_min_est": 8,
+    "zone_calc": "Расширенная",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.948348,
+     43.232783
+    ]
+   },
+   "properties": {
+    "n": 24,
+    "name": "Urban Gym",
+    "address": "Назарбаева 223, офис C3, 3 этаж",
+    "zone_table": "Расширенная",
+    "dist_table_km": 1.61,
+    "time_table": 9,
+    "format": "Фитнес-клуб, эконом",
+    "price": "Год от 150 000, месяц от 20 000, есть разовые",
+    "rating_2gis": "4,9 по 1 013 оценкам",
+    "lat": 43.232783,
+    "lon": 76.948348,
+    "straight_km": 1.19,
+    "road_est_km": 1.61,
+    "car_min_est": 9,
+    "zone_calc": "Расширенная",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.947032,
+     43.230455
+    ]
+   },
+   "properties": {
+    "n": 25,
+    "name": "Royal Club Nurly Tau",
+    "address": "Аль-Фараби 7 к5а, Нурлы-Тау, 1 этаж",
+    "zone_table": "Расширенная",
+    "dist_table_km": 1.58,
+    "time_table": 9,
+    "format": "Премиум, сеть Royal Club. По Wikicity здесь раньше был Fidelity «Нурлы Тау»",
+    "price": "Год от 396 000, месяц от 107 000",
+    "rating_2gis": "4,8 по 1 357 оценкам",
+    "lat": 43.230455,
+    "lon": 76.947032,
+    "straight_km": 1.17,
+    "road_est_km": 1.58,
+    "car_min_est": 9,
+    "zone_calc": "Расширенная",
+    "car_10min": "да",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.942344,
+     43.238636
+    ]
+   },
+   "properties": {
+    "n": 26,
+    "name": "Q Fitness",
+    "address": "Площадь Республики 15, 1 этаж",
+    "zone_table": "Расширенная",
+    "dist_table_km": 2.66,
+    "time_table": 13,
+    "format": "Фитнес-клуб, эконом. Справочники хранят старый адрес Qfit на Самал-2, 24, вероятно переезд",
+    "price": "Год от 180 000, месяц от 18 000, есть разовые",
+    "rating_2gis": "4,9 по 900 оценкам",
+    "lat": 43.238636,
+    "lon": 76.942344,
+    "straight_km": 1.97,
+    "road_est_km": 2.66,
+    "car_min_est": 13,
+    "zone_calc": "Расширенная",
+    "car_10min": "нет",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.937587,
+     43.227949
+    ]
+   },
+   "properties": {
+    "n": 27,
+    "name": "Forme",
+    "address": "Аль-Фараби 41/7, блок 8, ЖК Metropole",
+    "zone_table": "Расширенная",
+    "dist_table_km": 2.53,
+    "time_table": 13,
+    "format": "Приватный премиальный женский клуб, персональные тренировки",
+    "price": "Цены не опубликованы, первая тренировка бесплатно",
+    "rating_2gis": "4,9 по 43 оценкам",
+    "lat": 43.227949,
+    "lon": 76.937587,
+    "straight_km": 1.88,
+    "road_est_km": 2.53,
+    "car_min_est": 13,
+    "zone_calc": "Расширенная",
+    "car_10min": "нет",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.968124,
+     43.212446
+    ]
+   },
+   "properties": {
+    "n": 28,
+    "name": "Energy Fit",
+    "address": "Достык 308, 2 этаж",
+    "zone_table": "Расширенная",
+    "dist_table_km": 2.33,
+    "time_table": 12,
+    "format": "Фитнес-студия: зумба, пилатес, стретчинг, танцы",
+    "price": "Месяц от 25 000, есть разовые",
+    "rating_2gis": "5,0 по 19 оценкам",
+    "lat": 43.212446,
+    "lon": 76.968124,
+    "straight_km": 1.73,
+    "road_est_km": 2.33,
+    "car_min_est": 12,
+    "zone_calc": "Расширенная",
+    "car_10min": "нет",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.968124,
+     43.212446
+    ]
+   },
+   "properties": {
+    "n": 29,
+    "name": "Sport Complex Qazaqstan",
+    "address": "Достык 308",
+    "zone_table": "Расширенная",
+    "dist_table_km": 2.33,
+    "time_table": 12,
+    "format": "Спорткомплекс: тренажерный зал и бассейн",
+    "price": "По Zoon: карта в тренажерный зал 50 000, зал с бассейном 180 000 и 280 000, срок не указан",
+    "rating_2gis": "Zoon 4,1 по 9 отзывам",
+    "lat": 43.212446,
+    "lon": 76.968124,
+    "straight_km": 1.73,
+    "road_est_km": 2.33,
+    "car_min_est": 12,
+    "zone_calc": "Расширенная",
+    "car_10min": "нет",
+    "coord_source": "= Достык 308 (Energy Fit)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.970002,
+     43.207511
+    ]
+   },
+   "properties": {
+    "n": 30,
+    "name": "Wellness Club LUXOR",
+    "address": "Достык 341, 1 этаж",
+    "zone_table": "Вне зоны",
+    "dist_table_km": 3.1,
+    "time_table": 15,
+    "format": "Премиум, wellness-комплекс",
+    "price": "Год от 650 000, месяц от 180 000, есть разовые",
+    "rating_2gis": "4,9 по 906 оценкам",
+    "lat": 43.207511,
+    "lon": 76.970002,
+    "straight_km": 2.3,
+    "road_est_km": 3.1,
+    "car_min_est": 15,
+    "zone_calc": "Вне зоны",
+    "car_10min": "нет",
+    "coord_source": "2ГИС"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     76.932852,
+     43.23865
+    ]
+   },
+   "properties": {
+    "n": 31,
+    "name": "Woom",
+    "address": "Сейфуллина 597/7, ЖК Abai",
+    "zone_table": "Вне зоны",
+    "dist_table_km": 3.51,
+    "time_table": 17,
+    "format": "Женский фитнес-клуб",
+    "price": "Год от 550 000, месяц от 85 000, есть разовые",
+    "rating_2gis": "4,8 по 453 оценкам",
+    "lat": 43.23865,
+    "lon": 76.932852,
+    "straight_km": 2.6,
+    "road_est_km": 3.51,
+    "car_min_est": 17,
+    "zone_calc": "Вне зоны",
+    "car_10min": "нет",
+    "coord_source": "2ГИС"
+   }
+  }
+ ]
+}
